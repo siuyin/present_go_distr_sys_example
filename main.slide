@@ -7,13 +7,14 @@ Technology Consultant, Beyond Broadcast LLP
 siuyin@beyondbroadcast.com
 
 * Revision History
+- 20151221-1556 Manager to-do list. Provide persistence of incoming jobs.
 - 20151221-1336 Manager -- let him listen to the Stable Files Pool and act on it. FileInfo must be deep copied into the message struct.
 - 20161221-1042 File Watcher -- but we need to learn about package names first. Decided to put the system configuration in a Go package rather than a YAML file because of Go's checking of constants.
 - 20161221-1040 Serial Number (ID) Generator
 - 20161221-1000 Name, Rank and Serial Number (ID)
 
 * Essential Infrastructure
-: ----------------------------------------------------
+: ------------------------------------------------------------
 
 * First start NATS
 start_nats.sh:
@@ -27,7 +28,6 @@ ido/main.go:
 .play -edit ido/main.go /010/,/020/
 This is a critical service which many other services depend on. New services cannot start if they do not get an ID.
 
-
 * System Services
 : --------------------------------------------------------
 
@@ -35,6 +35,8 @@ This is a critical service which many other services depend on. New services can
 mgr/mun.go:
 .play -edit mgr/mun.go /010/,/020/
 
+This manager shares his configuration package (mgr/mun) with workers that report to him.
+.code mgr/mun.go /030/,/040/
 
 * File Watcher
 fw/main.go:
