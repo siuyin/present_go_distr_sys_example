@@ -22,6 +22,11 @@ const (
 	HBListener  = App + ".HeartBeatListener"
 )
 
+// Stable Files Pool
+const (
+	StableFilesA = App + ".StableFilesPool.A"
+)
+
 // NRS Name, Rank and Serial Number (ID)
 type NRS struct {
 	Name, Rank, ID string

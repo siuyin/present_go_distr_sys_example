@@ -15,11 +15,18 @@ siuyin@beyondbroadcast.com
 * First start NATS
 start_nats.sh:
 .play start_nats.sh
+NATS is the message or event bus.
 
 
 * Get your IDs here at the ID Office
 ido/main.go:
 .play -edit ido/main.go /010/,/020/
+This is a critical service which many other services depend on. New services cannot start if they do not get an ID.
+
+* File Watcher
+fw/main.go:
+.code fw/main.go /010/,/020/
+.play -edit fw/main.go /030/,/040/
 
 
 * Name, Rank and Serial Number
@@ -28,9 +35,9 @@ nrs/main.go:
 All agents _should_ have a heartbeat so that they are discoverable.
 
 
-* Heart beat listener #FIXME
+* Heart beat listener: Herbert -- FIXME
 hbl/main.go:
 .play -edit hbl/main.go /010/,/020/
-Things that move have a leader. That leader has a database.
+Things that move have a leader. That leader, named Herbert, has a database.
 
-The EgA system moves, new services are added and removed frequently. This heart beat listener should write entries on what it sees into its notebook.
+The system moves, new services are added and removed frequently. This heart beat listener should write entries on what it sees into its notebook.
