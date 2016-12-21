@@ -7,7 +7,7 @@ Technology Consultant, Beyond Broadcast LLP
 siuyin@beyondbroadcast.com
 
 * Revision History
-- 20151221-1556 Manager to-do list. Provide persistence of incoming jobs.
+- 20151221-1556 Manager to-do list. Provide persistence of incoming jobs. Tried gob encoding with bolt-db. Could not get it to work. Went back to json.
 - 20151221-1336 Manager -- let him listen to the Stable Files Pool and act on it. FileInfo must be deep copied into the message struct.
 - 20161221-1042 File Watcher -- but we need to learn about package names first. Decided to put the system configuration in a Go package rather than a YAML file because of Go's checking of constants.
 - 20161221-1040 Serial Number (ID) Generator

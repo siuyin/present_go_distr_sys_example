@@ -3,8 +3,7 @@ package main
 // Manager Mun
 
 import (
-	"bytes"
-	"encoding/gob"
+	"encoding/json"
 	"fmt"
 	"log"
 	"time"
@@ -49,10 +48,13 @@ func main() {
 	//020_OMIT
 
 	tkr := time.Tick(time.Second)
+	tkr2 := time.Tick(5 * time.Second)
 	for {
 		select {
 		case <-tkr:
 			c.Publish(cfg.HeartBeat, me)
+		case <-tkr2:
+			dumpDB()
 		case w := <-workQ:
 			saveToDB(w)
 		}
@@ -70,13 +72,14 @@ type workItem struct {
 const timeFmt = "2006-01-02 15:04:05.000000"
 
 var db *bolt.DB
-var (
-	gobEnc    *gob.Encoder
-	gobEncBuf bytes.Buffer
 
-	gobDec    *gob.Decoder
-	gobDecBuf bytes.Buffer
-)
+// var (
+// 	gobEnc    *gob.Encoder
+// 	gobEncBuf bytes.Buffer
+//
+// 	gobDec    *gob.Decoder
+// 	gobDecBuf bytes.Buffer
+// )
 
 // Remember to defer db.Close() in main.
 func initDB() {
@@ -99,26 +102,45 @@ I have difficulty with go present not killing the process tree.`, err)
 		}
 		return nil
 	})
-
-	gobEnc = gob.NewEncoder(&gobEncBuf)
-	gobDec = gob.NewDecoder(&gobDecBuf)
 	log.Println("db Ready")
 }
 
 func saveToDB(w workItem) {
 	db.Update(func(tx *bolt.Tx) error {
-		(&gobEncBuf).Reset() // make sure the buffer is cleared
-		if err := gobEnc.Encode(w); err != nil {
-			log.Println("GOB encode error: ", err)
+		byt, err := json.Marshal(w)
+		if err != nil {
+			log.Println("json encode error: ", err)
 			return err
 		}
 
-		gobEnc.Encode(w)
 		b := tx.Bucket([]byte("Jobs"))
-		err := b.Put([]byte(time.Now().Format(timeFmt)), gobEncBuf.Bytes())
+		err = b.Put([]byte(time.Now().Format(timeFmt)), byt)
 
 		log.Println(w.Data.FileName)
 
 		return err
 	})
+}
+
+func dumpDB() {
+	fmt.Println("DB Dump")
+	db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("Jobs"))
+		c := b.Cursor()
+		for k, v := c.First(); k != nil; k, v = c.Next() {
+			wi := workItem{}
+			err := json.Unmarshal(v, &wi)
+			if err != nil {
+				log.Fatal(err)
+			}
+			if wi.Data.IsDir {
+				fmt.Printf("t:%s f:%v, DIR\n", k, wi.Data.FileName)
+			} else {
+				fmt.Printf("t:%s f:%v, s:%v\n", k, wi.Data.FileName, wi.Data.Size)
+			}
+		}
+
+		return nil
+	})
+	fmt.Println("End Dump")
 }
