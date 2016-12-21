@@ -1,4 +1,4 @@
-Example Distribute System
+Example Distributed System
 with Go and NATS
 21 Dec 2016
 
@@ -8,3 +8,11 @@ siuyin@beyondbroadcast.com
 
 * Revision History
 - Name, Rank and Serial Number (ID)
+
+* First start NATS
+start_nats.sh:
+.play start_nats.sh
+
+* Name, Rank and Serial Number
+nrs/main.go
+.play -edit nrs/main.go /010/,/020/
