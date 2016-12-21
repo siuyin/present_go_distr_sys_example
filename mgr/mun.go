@@ -37,13 +37,11 @@ func main() {
 	initDB() // see file db.go
 	defer db.Close()
 
-	//010_OMIT
 	workQ := make(chan workItem, workQSize)
+	//010_OMIT
 	c.Subscribe(cfg.StableFilesA, func(subj, reply string, fd *mun.FileDetails) {
 		w := workItem{Subject: subj, Data: *fd}
 		workQ <- w
-		// log.Printf("Received from %s f:%s d:%s D:%v s:%v t:%s",
-		// 	subj, fd.FileName, fd.WorkingDirectory, fd.IsDir, fd.Size, fd.ModTime)
 	})
 	//020_OMIT
 
@@ -51,12 +49,15 @@ func main() {
 	tkr2 := time.Tick(5 * time.Second)
 	for {
 		select {
+		//050_OMIT
 		case <-tkr:
 			c.Publish(cfg.HeartBeat, me)
+			clearInbox() // from DB
 		case <-tkr2:
-			dumpDB()
+			// dumpDB()
 		case w := <-workQ:
 			saveToDB(w)
+			//060_OMIT
 		}
 	}
 }
@@ -102,6 +103,15 @@ I have difficulty with go present not killing the process tree.`, err)
 		}
 		return nil
 	})
+
+	db.Update(func(tx *bolt.Tx) error {
+		_, err := tx.CreateBucketIfNotExists([]byte("JobsPtr"))
+		if err != nil {
+			return fmt.Errorf("create bucket: %s", err)
+		}
+		return nil
+	})
+
 	log.Println("db Ready")
 }
 
@@ -143,4 +153,71 @@ func dumpDB() {
 		return nil
 	})
 	fmt.Println("End Dump")
+}
+
+func getJob(ptr []byte) ([]byte, []byte, error) {
+	buf := make([]byte, 256)
+	vBuf := make([]byte, 1024000)
+	err := db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("Jobs"))
+		c := b.Cursor()
+		k, v := c.Seek(ptr)
+		if k == nil {
+			return mun.NoMoreWorkError
+		}
+		copy(buf, k)
+		copy(vBuf, v)
+
+		return nil
+	})
+	return buf, vBuf, err
+}
+
+func clearInbox() {
+	ptr, ptrSet := getPtr()
+	if !ptrSet {
+		ptr = []byte("0")
+	}
+
+	k, v, err := getJob(ptr)
+	if err != nil {
+		if err != mun.NoMoreWorkError {
+			log.Fatal(err)
+		}
+		return
+	}
+	err = doFileWork(k, v) //and do work
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func getPtr() ([]byte, bool) {
+	var ptrSet bool
+	ptr := make([]byte, 32)
+
+	db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("JobsPtr"))
+		v := b.Get([]byte("Ptr"))
+		if v == nil {
+			ptrSet = false
+		}
+		ptrSet = true
+		copy(ptr, v)
+		return nil
+	})
+	return ptr, ptrSet
+}
+
+func doFileWork(k, v []byte) error {
+	err := db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("JobsPtr"))
+		err := b.Put([]byte("Ptr"), k)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("Dispatching work: %s %s\n", k, v)
+		return err
+	})
+	return err
 }

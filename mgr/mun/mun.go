@@ -16,3 +16,12 @@ type FileDetails struct {
 	ModTime          time.Time
 	FileWatcher      cfg.NRS
 }
+
+type noMoreWorkErr struct{}
+
+func (e noMoreWorkErr) Error() string {
+	return "No More Work"
+}
+
+// NoMoreWorkError signals no more work
+var NoMoreWorkError noMoreWorkErr
