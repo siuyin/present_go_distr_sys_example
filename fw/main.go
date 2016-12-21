@@ -2,9 +2,11 @@ package main
 
 import (
 	"log"
+	"os"
 	"time"
 
 	"siuyin/junk/nats/exampleA/cfg"
+	"siuyin/junk/nats/exampleA/mgr/mun"
 
 	"github.com/nats-io/go-nats"
 	"github.com/siuyin/dflt"
@@ -31,16 +33,36 @@ func main() {
 	wt := w.Watch()
 	//020_OMIT
 
+	var (
+		wd  string
+		err error
+	)
+	for wd, err = os.Getwd(); err != nil; wd, err = os.Getwd() {
+		log.Println(err)
+		time.Sleep(time.Second)
+	}
+
 	log.Printf("%s Starting...", name)
 	tkr := time.Tick(time.Second)
+MAINLOOP:
 	for {
-		//030_OMIT
 		select {
 		case <-tkr:
 			c.Publish(cfg.HeartBeat, me)
 		case f := <-wt: // f is a string // HL
-			c.Publish(cfg.StableFilesA, f)
+			fi, err := os.Stat(f)
+			if err != nil {
+				log.Println(err)
+				continue MAINLOOP
+			}
+			//030_OMIT
+			fd := mun.FileDetails{
+				WorkingDirectory: wd, FileName: f, FileWatcher: me}
+			fd.IsDir = fi.IsDir()
+			fd.Size = fi.Size()
+			fd.ModTime = fi.ModTime()
+			c.Publish(cfg.StableFilesA, &fd)
+			//040_OMIT
 		}
-		//040_OMIT
 	}
 }

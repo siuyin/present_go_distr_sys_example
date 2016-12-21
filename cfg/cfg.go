@@ -20,6 +20,7 @@ const (
 	FileWatcher = App + ".FileWatcher"
 	IDOfficer   = App + ".IDOfficer"
 	HBListener  = App + ".HeartBeatListener"
+	ManagerA    = App + ".ManagerA"
 )
 
 // Stable Files Pool

@@ -7,21 +7,34 @@ Technology Consultant, Beyond Broadcast LLP
 siuyin@beyondbroadcast.com
 
 * Revision History
+- 20151221-1336 Manager -- let him listen to the Stable Files Pool and act on it. FileInfo must be deep copied into the message struct.
 - 20161221-1042 File Watcher -- but we need to learn about package names first. Decided to put the system configuration in a Go package rather than a YAML file because of Go's checking of constants.
 - 20161221-1040 Serial Number (ID) Generator
 - 20161221-1000 Name, Rank and Serial Number (ID)
 
+* Essential Infrastructure
+: ----------------------------------------------------
 
 * First start NATS
 start_nats.sh:
 .play start_nats.sh
 NATS is the message or event bus.
 
+Tip: Start these essential services in separate terminals to facilitate development.
 
 * Get your IDs here at the ID Office
 ido/main.go:
 .play -edit ido/main.go /010/,/020/
 This is a critical service which many other services depend on. New services cannot start if they do not get an ID.
+
+
+* System Services
+: --------------------------------------------------------
+
+* Manager Mun
+mgr/mun.go:
+.play -edit mgr/mun.go /010/,/020/
+
 
 * File Watcher
 fw/main.go:
@@ -41,3 +54,9 @@ hbl/main.go:
 Things that move have a leader. That leader, named Herbert, has a database.
 
 The system moves, new services are added and removed frequently. This heart beat listener should write entries on what it sees into its notebook.
+
+
+* System-wide configuration
+: ----------------------------------------------------------
+cfg/cfg.go:
+.code cfg/cfg.go
