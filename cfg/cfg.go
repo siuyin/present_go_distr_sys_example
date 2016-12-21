@@ -18,6 +18,8 @@ const (
 const (
 	Unassigned  = App + ".Unassigned"
 	FileWatcher = App + ".FileWatcher"
+	IDOfficer   = App + ".IDOfficer"
+	HBListener  = App + ".HeartBeatListener"
 )
 
 // NRS Name, Rank and Serial Number (ID)

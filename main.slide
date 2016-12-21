@@ -25,6 +25,7 @@ ido/main.go:
 * Name, Rank and Serial Number
 nrs/main.go:
 .play -edit nrs/main.go /010/,/020/
+All agents _should_ have a heartbeat so that they are discoverable.
 
 
 * Heart beat listener #FIXME

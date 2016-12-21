@@ -6,27 +6,34 @@ import (
 	"crypto/rand"
 	"encoding/base32"
 	"log"
+	"time"
 
 	"siuyin/junk/nats/exampleA/cfg"
 
 	"github.com/nats-io/go-nats"
 )
 
-//010_OMIT
 func main() {
 	nc, _ := nats.Connect(nats.DefaultURL)
 	c, _ := nats.NewEncodedConn(nc, "json")
 	defer c.Close()
+
+	tkr := time.Tick(time.Second)
+	me := cfg.NRS{Name: "IDOfc1", Rank: cfg.IDOfficer, ID: "001"}
+	//010_OMIT
 	log.Println("ID Issuer Starting...")
 
 	c.Subscribe(cfg.IDOffice, func(subj, reply string, req *string) {
 		c.Publish(reply, randID())
 	})
-
-	select {}
+	//020_OMIT
+	for {
+		select {
+		case <-tkr:
+			c.Publish(cfg.HeartBeat, me)
+		}
+	}
 }
-
-//020_OMIT
 
 func randID() string {
 	c := 5

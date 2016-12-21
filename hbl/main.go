@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"time"
 
 	"siuyin/junk/nats/exampleA/cfg"
 
@@ -16,6 +17,12 @@ func main() {
 	nc, _ := nats.Connect(nats.DefaultURL)
 	c, _ := nats.NewEncodedConn(nc, "json")
 	defer c.Close()
+	tkr := time.Tick(time.Second)
+	id := ""
+	for id == "" {
+		c.Request(cfg.IDOffice, "May I an ID please?", &id, time.Second)
+	}
+	me := cfg.NRS{Name: "Herbert", Rank: cfg.HBListener, ID: id}
 	//010_OMIT
 	log.Println("Listener Starting...")
 
@@ -24,5 +31,10 @@ func main() {
 	})
 	//020_OMIT
 
-	select {}
+	for {
+		select {
+		case <-tkr:
+			c.Publish(cfg.HeartBeat, me)
+		}
+	}
 }
