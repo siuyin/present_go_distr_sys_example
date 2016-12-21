@@ -173,22 +173,28 @@ func getJob(ptr []byte) ([]byte, []byte, error) {
 	return buf, vBuf, err
 }
 
-func clearInbox() {
+func getNextJob() ([]byte, []byte, error) {
 	ptr, ptrSet := getPtr()
 	if !ptrSet {
 		ptr = []byte("0")
 	}
 
 	k, v, err := getJob(ptr)
+	return k, v, err
+}
+
+func clearInbox() {
+	k, v, err := getNextJob()
 	if err != nil {
 		if err != mun.NoMoreWorkError {
-			log.Fatal(err)
+			log.Println(err)
 		}
 		return
 	}
+
 	err = doFileWork(k, v) //and do work
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 }
 

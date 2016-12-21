@@ -28,7 +28,7 @@ func main() {
 	name := dflt.EnvString("NAME", "FileWatcher1")
 	me := cfg.NRS{Name: name, Rank: cfg.FileWatcher, ID: myID}
 
-	monPath := dflt.EnvString("MONPATH", ".")
+	monPath := dflt.EnvString("MONPATH", "./junk")
 	w := watch.NewWatcher(monPath, time.Second, 3*time.Second)
 	wt := w.Watch()
 	//020_OMIT
@@ -42,7 +42,7 @@ func main() {
 		time.Sleep(time.Second)
 	}
 
-	log.Printf("%s Starting...", name)
+	log.Printf("%s watching %s.", name, monPath)
 	tkr := time.Tick(time.Second)
 MAINLOOP:
 	for {
