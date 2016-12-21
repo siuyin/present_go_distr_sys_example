@@ -16,7 +16,14 @@ func main() {
 	nc, _ := nats.Connect(nats.DefaultURL)
 	c, _ := nats.NewEncodedConn(nc, "json")
 	defer c.Close()
-	me := nrs{Name: "NameA", Rank: "EgA.Unassigned", ID: "CXHSD"}
+
+	myID := ""
+	for myID == "" {
+		c.Request("EgA.IDOffice", "I'd like an ID please.", &myID, time.Second)
+	}
+	log.Printf("My ID is %v", myID)
+
+	me := nrs{Name: "NameA", Rank: "EgA.Unassigned", ID: myID}
 	log.Println("Service Starting...")
 	tkr := time.Tick(time.Second)
 	for {

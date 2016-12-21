@@ -8,15 +8,26 @@ siuyin@beyondbroadcast.com
 
 * Revision History
 - Name, Rank and Serial Number (ID)
+- Serial Number (ID) Generator
 
 * First start NATS
 start_nats.sh:
 .play start_nats.sh
 
+
 * Name, Rank and Serial Number
 nrs/main.go:
 .play -edit nrs/main.go /010/,/020/
 
+
 * Heart beat listener
 hbl/main.go:
 .play -edit hbl/main.go /010/,/020/
+Things that move have a leader. That leader has a database.
+
+The EgA system moves, new services are added and removed frequently. This heart beat listener should write entries on what it sees into its notebook.
+
+
+* Get your IDs here at the ID Office
+ido/main.go:
+.play -edit ido/main.go /010/,/020/
