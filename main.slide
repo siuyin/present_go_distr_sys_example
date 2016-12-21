@@ -14,5 +14,9 @@ start_nats.sh:
 .play start_nats.sh
 
 * Name, Rank and Serial Number
-nrs/main.go
+nrs/main.go:
 .play -edit nrs/main.go /010/,/020/
+
+* Heart beat listener
+hbl/main.go:
+.play -edit hbl/main.go /010/,/020/
