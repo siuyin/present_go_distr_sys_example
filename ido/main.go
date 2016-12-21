@@ -7,6 +7,8 @@ import (
 	"encoding/base32"
 	"log"
 
+	"siuyin/junk/nats/exampleA/cfg"
+
 	"github.com/nats-io/go-nats"
 )
 
@@ -17,7 +19,7 @@ func main() {
 	defer c.Close()
 	log.Println("ID Issuer Starting...")
 
-	c.Subscribe("EgA.IDOffice", func(subj, reply string, req *string) {
+	c.Subscribe(cfg.IDOffice, func(subj, reply string, req *string) {
 		c.Publish(reply, randID())
 	})
 
