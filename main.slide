@@ -50,12 +50,13 @@ nrs/main.go:
 All agents _should_ have a heartbeat so that they are discoverable.
 
 
-* Heart beat listener: Herbert -- FIXME
+* Heart beat listener: Herbert
 hbl/main.go:
 .play -edit hbl/main.go /010/,/020/
 Things that move have a leader. That leader, named Herbert, has a database.
 
 The system moves, new services are added and removed frequently. This heart beat listener should write entries on what it sees into its notebook.
+The database is an in-memory map.
 
 
 * System-wide configuration
