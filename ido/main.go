@@ -6,7 +6,6 @@ import (
 	"crypto/rand"
 	"encoding/base32"
 	"log"
-	"time"
 
 	"siuyin/junk/nats/exampleA/cfg"
 
@@ -18,8 +17,8 @@ func main() {
 	c, _ := nats.NewEncodedConn(nc, "json")
 	defer c.Close()
 
-	tkr := time.Tick(time.Second)
-	me := cfg.NRS{Name: "IDOfc1", Rank: cfg.IDOfficer, ID: "001"}
+	me := &cfg.NRS{Name: "IDOfc1", Rank: cfg.IDOfficer, ID: "001"}
+	cfg.SendHeartBeat(c, me)
 	//010_OMIT
 	log.Println("ID Issuer Starting...")
 
@@ -27,12 +26,7 @@ func main() {
 		c.Publish(reply, randID())
 	})
 	//020_OMIT
-	for {
-		select {
-		case <-tkr:
-			c.Publish(cfg.HeartBeat, me)
-		}
-	}
+	select {}
 }
 
 func randID() string {

@@ -18,21 +18,39 @@ func main() {
 	c, _ := nats.NewEncodedConn(nc, "json")
 	defer c.Close()
 
-	myID := ""
-	for myID == "" {
-		c.Request(cfg.IDOffice, "I'd like an ID please.", &myID, time.Second)
-	}
+	myID := cfg.GetID(c)
 	log.Printf("My ID is %v", myID)
 
 	//010_OMIT
 	name := dflt.EnvString("NAME", "FileWatcher1")
-	me := cfg.NRS{Name: name, Rank: cfg.FileWatcher, ID: myID}
+	me := &cfg.NRS{Name: name, Rank: cfg.FileWatcher, ID: myID}
+	cfg.SendHeartBeat(c, me)
 
 	monPath := dflt.EnvString("MONPATH", "./junk")
 	w := watch.NewWatcher(monPath, time.Second, 3*time.Second)
 	wt := w.Watch()
 	//020_OMIT
 
+	wd := getWorkingDirectory()
+
+	log.Printf("%s watching %s.", name, monPath)
+MAINLOOP:
+	for {
+		select {
+		//030_OMIT
+		case f := <-wt: // f is a string // HL
+			fi, err := os.Stat(f)
+			if err != nil {
+				log.Println(err)
+				continue MAINLOOP
+			}
+			sendFileDetails(c, wd, f, fi, me)
+			//040_OMIT
+		}
+	}
+}
+
+func getWorkingDirectory() string {
 	var (
 		wd  string
 		err error
@@ -41,28 +59,13 @@ func main() {
 		log.Println(err)
 		time.Sleep(time.Second)
 	}
-
-	log.Printf("%s watching %s.", name, monPath)
-	tkr := time.Tick(time.Second)
-MAINLOOP:
-	for {
-		select {
-		case <-tkr:
-			c.Publish(cfg.HeartBeat, me)
-		case f := <-wt: // f is a string // HL
-			fi, err := os.Stat(f)
-			if err != nil {
-				log.Println(err)
-				continue MAINLOOP
-			}
-			//030_OMIT
-			fd := mun.FileDetails{
-				WorkingDirectory: wd, FileName: f, FileWatcher: me}
-			fd.IsDir = fi.IsDir()
-			fd.Size = fi.Size()
-			fd.ModTime = fi.ModTime()
-			c.Publish(cfg.StableFilesA, &fd)
-			//040_OMIT
-		}
-	}
+	return wd
+}
+func sendFileDetails(c *nats.EncodedConn, wd, fn string, fi os.FileInfo, me *cfg.NRS) {
+	fd := mun.FileDetails{
+		WorkingDirectory: wd, FileName: fn, FileWatcher: *me}
+	fd.IsDir = fi.IsDir()
+	fd.Size = fi.Size()
+	fd.ModTime = fi.ModTime()
+	c.Publish(cfg.StableFilesA, &fd)
 }

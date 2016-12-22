@@ -25,13 +25,11 @@ func main() {
 	c, _ := nats.NewEncodedConn(nc, "json")
 	defer c.Close()
 
-	myID := ""
-	for myID == "" {
-		c.Request(cfg.IDOffice, "I'd like an ID please.", &myID, time.Second)
-	}
+	myID := cfg.GetID(c)
 	log.Printf("My ID is %v", myID)
 
-	me := cfg.NRS{Name: "Mun", Rank: cfg.ManagerA, ID: myID}
+	me := &cfg.NRS{Name: "Mun", Rank: cfg.ManagerA, ID: myID}
+	cfg.SendHeartBeat(c, me)
 	log.Printf("Manager %s Starting...", me.Name)
 
 	initDB() // see file db.go
@@ -51,7 +49,6 @@ func main() {
 		select {
 		//050_OMIT
 		case <-tkr:
-			c.Publish(cfg.HeartBeat, me)
 			clearInbox() // from DB
 		case <-tkr2:
 			// dumpDB()

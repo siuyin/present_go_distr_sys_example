@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"time"
 
 	"siuyin/junk/nats/exampleA/cfg"
 
@@ -15,20 +14,12 @@ func main() {
 	defer c.Close()
 
 	//010_OMIT
-	myID := ""
-	for myID == "" {
-		c.Request(cfg.IDOffice, "I'd like an ID please.", &myID, time.Second)
-	}
+	myID := cfg.GetID(c) // will block until IDOffice is open
 	log.Printf("My ID is %v", myID)
 
-	me := cfg.NRS{Name: "NameA", Rank: cfg.Unassigned, ID: myID}
+	me := &cfg.NRS{Name: "NameA", Rank: cfg.Unassigned, ID: myID}
+	cfg.SendHeartBeat(c, me)
 	log.Println("Service Starting...")
-	tkr := time.Tick(time.Second)
-	for {
-		select {
-		case <-tkr:
-			c.Publish(cfg.HeartBeat, me)
-		}
-	}
+	select {}
 	//020_OMIT
 }

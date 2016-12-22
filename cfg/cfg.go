@@ -7,6 +7,12 @@ package cfg
 //
 // Once a response is coded it stays in our DNA
 
+import (
+	"time"
+
+	"github.com/nats-io/go-nats"
+)
+
 // Application Constants and Service Names
 const (
 	App       = "EgA"
@@ -31,4 +37,26 @@ const (
 // NRS Name, Rank and Serial Number (ID)
 type NRS struct {
 	Name, Rank, ID string
+}
+
+//GetID requests an ID from the ID Office.
+func GetID(c *nats.EncodedConn) string {
+	id := ""
+	for id == "" {
+		c.Request(IDOffice, "I'd like an ID please.", &id, time.Second)
+	}
+	return id
+}
+
+// SendHeartBeat sends a heart beat to the HeartBeat endpoint.
+func SendHeartBeat(c *nats.EncodedConn, me *NRS) {
+	tkr := time.Tick(time.Second)
+	go func() {
+		for {
+			select {
+			case <-tkr:
+				c.Publish(HeartBeat, me)
+			}
+		}
+	}()
 }

@@ -24,11 +24,9 @@ func main() {
 	c, _ := nats.NewEncodedConn(nc, "json")
 	defer c.Close()
 	tkr := time.Tick(time.Second)
-	id := ""
-	for id == "" {
-		c.Request(cfg.IDOffice, "May I an ID please?", &id, time.Second)
-	}
-	me := cfg.NRS{Name: "Herbert", Rank: cfg.HBListener, ID: id}
+	id := cfg.GetID(c)
+	me := &cfg.NRS{Name: "Herbert", Rank: cfg.HBListener, ID: id}
+	cfg.SendHeartBeat(c, me)
 	seen := map[string]dat{}
 	//010_OMIT
 	log.Println("Listener Starting...")
@@ -52,7 +50,9 @@ func main() {
 }
 
 func displayDat(d *map[string]dat) {
+	mtx.Lock()
 	keys := make([]string, len(*d))
+	mtx.Unlock()
 	i := 0
 
 	mtx.Lock()
