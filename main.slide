@@ -7,7 +7,7 @@ Technology Consultant, Beyond Broadcast LLP
 siuyin@beyondbroadcast.com
 
 * Revision History
-- 20151222-0916 Refactor common code like send heartbeat and get ID to cfg pacakge.
+- 20151222-0916 Refactor common code like send heartbeat and get ID to cfg package.
 - 20151222-0126 HeartBeatListener -- added in-memory DB (map).
 - 20151221-1556 Manager to-do list. Provide persistence of incoming jobs. Tried gob encoding with bolt-db. Could not get it to work. Went back to json.
 - 20151221-1336 Manager -- let him listen to the Stable Files Pool and act on it. FileInfo must be deep copied into the message struct.
