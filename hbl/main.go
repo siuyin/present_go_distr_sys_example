@@ -33,7 +33,7 @@ func main() {
 
 	c.Subscribe(cfg.HeartBeat, func(agent *dat) {
 		agent.T = time.Now()
-		key := agent.Name + agent.Rank
+		key := agent.Name + agent.Rank + agent.ID
 		mtx.Lock()
 		seen[key] = *agent
 		mtx.Unlock()
@@ -72,6 +72,6 @@ func displayDat(d *map[string]dat) {
 		if time.Now().Sub(v.T).Seconds() > 2 {
 			s = "F: "
 		}
-		fmt.Printf("%s%s %s %s\n", s, v.Name, v.Rank, v.T.Format("15:04:05 MST"))
+		fmt.Printf("%s%s %s %s %s\n", s, v.Name, v.Rank, v.ID, v.T.Format("15:04:05 MST"))
 	}
 }
