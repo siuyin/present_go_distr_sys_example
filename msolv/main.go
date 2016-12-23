@@ -2,6 +2,7 @@ package main
 
 // Extensible Manager MathSolver Marsha
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -88,8 +89,9 @@ func showAnswer(j *map[string]*work, m *sync.Mutex) {
 						fmt.Printf("%s ID:%s solved by %s/%s in %.6f ans: %s\n", now.Format("05.000000"),
 							k, v.Answers[0].SolverID, v.Answers[0].AnswerID, v.Answers[0].AnswerTime.Sub(v.ReceivedAt).Seconds(),
 							v.Answers[0].Answer)
+						delete(*j, k) // optional
 					}
-					v.Done = true
+					//v.Done = true
 				}
 				m.Unlock()
 			}
@@ -121,7 +123,6 @@ func flagUnsolvedJobs(j *map[string]*work, m *sync.Mutex) {
 						fmt.Printf("%s ID:%s not solved for %.6f\n", now.Format("05.000000"),
 							k, now.Sub(v.ReceivedAt).Seconds())
 						delete(*j, k)
-						fmt.Printf("Deleted job ID: %s\n", k)
 					}
 				}
 				m.Unlock()
@@ -139,10 +140,22 @@ func flagMultipleAnswerJobs(j *map[string]*work, m *sync.Mutex) {
 				for k, v := range *j {
 					now := time.Now()
 					if now.Sub(v.ReceivedAt) > 10*time.Millisecond && len(v.Answers) > 1 {
-						fmt.Printf("%s ID:%s multiple Ans: %d\n", now.Format("05.000000"),
-							k, len(v.Answers))
-						delete(*j, k)
-						fmt.Printf("Deleted job ID: %s\n", k)
+						a0 := v.Answers[0].Answer
+						unanimous := true
+						for _, v := range v.Answers[1:] {
+							if !bytes.Equal(a0, v.Answer) {
+								unanimous = false
+								break
+							}
+						}
+						if unanimous {
+							fmt.Printf("ID: %s Unanimous answer from %d: %s\n", k, len(v.Answers), a0)
+							delete(*j, k)
+						} else {
+							fmt.Printf("%s ID:%s multiple differing Ans: %d\n", now.Format("05.000000"),
+								k, len(v.Answers))
+							delete(*j, k)
+						}
 					}
 				}
 				m.Unlock()
