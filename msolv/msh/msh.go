@@ -1,5 +1,7 @@
 package msh
 
+import "time"
+
 // configuration specific to MathSolver Marsha
 
 // MathProblem is the type of message sent to the MathProblemsA bulletin board.
@@ -10,8 +12,9 @@ type MathProblem struct {
 
 //MathAnswer is an answer to a MathProblem
 type MathAnswer struct {
-	SolverID  string
-	ProblemID string
-	AnswerID  string
-	Answer    []byte
+	SolverID   string
+	ProblemID  string
+	AnswerID   string
+	AnswerTime time.Time
+	Answer     []byte
 }

@@ -5,6 +5,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"siuyin/junk/nats/exampleA/cfg"
 	"siuyin/junk/nats/exampleA/msolv/msh"
@@ -26,13 +27,14 @@ func main() {
 	//010_OMIT
 	c.Subscribe(cfg.MathSolversAIn, func(mp *msh.MathProblem) {
 		myAns := msh.MathAnswer{
-			SolverID:  me.ID,
-			ProblemID: mp.ID,
-			AnswerID:  cfg.GetID(c),
-			Answer:    []byte("42"),
+			SolverID:   me.ID,
+			ProblemID:  mp.ID,
+			AnswerID:   cfg.GetID(c),
+			Answer:     []byte("42"),
+			AnswerTime: time.Now(),
 		}
 		c.Publish(cfg.MathSolversAOut, myAns)
-		fmt.Printf("Sent answer: %v\n", myAns)
+		fmt.Printf("Sent answer: %s for Problem: %s\n", myAns.Answer, myAns.ProblemID)
 	})
 	//020_OMIT
 	select {}

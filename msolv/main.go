@@ -47,6 +47,8 @@ func main() {
 	//020_OMIT
 	selfTest(c)
 	flagUnsolvedJobs(&jobs, &mtx)
+	flagMultipleAnswerJobs(&jobs, &mtx)
+	showAnswer(&jobs, &mtx)
 	//listJobs(&jobs, &mtx)
 
 	select {}
@@ -61,13 +63,35 @@ func selfTest(c *nats.EncodedConn) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	mp := msh.MathProblem{Name: "2 + 3", ID: cfg.GetID(c), Data: dat}
-	tkr := time.Tick(5 * time.Second)
+	tkr := time.Tick(1500 * time.Millisecond)
 	go func() {
 		for {
 			select {
 			case <-tkr:
+				mp := msh.MathProblem{Name: "2 + 3", ID: cfg.GetID(c), Data: dat}
 				c.Publish(cfg.MathProblemsA, mp)
+			}
+		}
+	}()
+}
+
+func showAnswer(j *map[string]*work, m *sync.Mutex) {
+	go func() {
+		tkr := time.Tick(1 * time.Second)
+		for {
+			select {
+			case <-tkr:
+				m.Lock()
+				for k, v := range *j {
+					now := time.Now()
+					if !v.Done && len(v.Answers) == 1 {
+						fmt.Printf("%s ID:%s solved by %s/%s in %.6f ans: %s\n", now.Format("05.000000"),
+							k, v.Answers[0].SolverID, v.Answers[0].AnswerID, v.Answers[0].AnswerTime.Sub(v.ReceivedAt).Seconds(),
+							v.Answers[0].Answer)
+					}
+					v.Done = true
+				}
+				m.Unlock()
 			}
 		}
 	}()
@@ -82,7 +106,6 @@ func updateJobs(jobs *map[string]*work, mtx *sync.Mutex, ans *msh.MathAnswer) {
 	mtx.Lock()
 	w := (*jobs)[ans.ProblemID]
 	w.Answers = append(w.Answers, *ans)
-	fmt.Printf("PID: %s, ans: %s\n", ans.ProblemID, ans.Answer)
 	mtx.Unlock()
 }
 func flagUnsolvedJobs(j *map[string]*work, m *sync.Mutex) {
@@ -97,6 +120,29 @@ func flagUnsolvedJobs(j *map[string]*work, m *sync.Mutex) {
 					if now.Sub(v.ReceivedAt) > 100*time.Millisecond && len(v.Answers) == 0 {
 						fmt.Printf("%s ID:%s not solved for %.6f\n", now.Format("05.000000"),
 							k, now.Sub(v.ReceivedAt).Seconds())
+						delete(*j, k)
+						fmt.Printf("Deleted job ID: %s\n", k)
+					}
+				}
+				m.Unlock()
+			}
+		}
+	}()
+}
+func flagMultipleAnswerJobs(j *map[string]*work, m *sync.Mutex) {
+	go func() {
+		tkr := time.Tick(1 * time.Second)
+		for {
+			select {
+			case <-tkr:
+				m.Lock()
+				for k, v := range *j {
+					now := time.Now()
+					if now.Sub(v.ReceivedAt) > 10*time.Millisecond && len(v.Answers) > 1 {
+						fmt.Printf("%s ID:%s multiple Ans: %d\n", now.Format("05.000000"),
+							k, len(v.Answers))
+						delete(*j, k)
+						fmt.Printf("Deleted job ID: %s\n", k)
 					}
 				}
 				m.Unlock()
