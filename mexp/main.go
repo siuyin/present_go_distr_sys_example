@@ -25,7 +25,7 @@ func main() {
 	cfg.SendHeartBeat(c, me)
 	log.Printf("MathExpert %s Starting...", me.Name)
 	//010_OMIT
-	c.Subscribe(cfg.MathSolversAIn, func(mp *msh.MathProblem) {
+	c.Subscribe(cfg.MathProblemsA, func(mp *msh.MathProblem) {
 		myAns := msh.MathAnswer{
 			SolverID:   me.ID,
 			ProblemID:  mp.ID,

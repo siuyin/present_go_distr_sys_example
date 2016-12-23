@@ -35,7 +35,6 @@ const (
 const (
 	StableFilesA    = App + ".StableFilesPool.A"
 	MathProblemsA   = App + ".MathProblems.A"
-	MathSolversAIn  = App + ".MathSolvers.A.Inbox"
 	MathSolversAOut = App + ".MathSolvers.A.Outbox"
 )
 

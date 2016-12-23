@@ -39,7 +39,7 @@ func main() {
 	//010_OMIT
 	c.Subscribe(cfg.MathProblemsA, func(mp *msh.MathProblem) {
 		addToJobs(&jobs, &mtx, mp)
-		c.Publish(cfg.MathSolversAIn, mp)
+		// No need to inform Experts (workers) as they already listen in.
 	})
 
 	c.Subscribe(cfg.MathSolversAOut, func(ans *msh.MathAnswer) {
