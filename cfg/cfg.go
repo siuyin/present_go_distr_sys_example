@@ -25,13 +25,18 @@ const (
 	Unassigned  = App + ".Unassigned"
 	FileWatcher = App + ".FileWatcher"
 	IDOfficer   = App + ".IDOfficer"
-	HBListener  = App + ".HeartBeatListener"
-	ManagerA    = App + ".ManagerA"
+	HBListener  = App + ".HeartBeatListener" // they listen to agent heart beats
+	ManagerA    = App + ".ManagerA"          // Example manager to manage files
+	MathSolver  = App + ".MathSolver"
+	MathExpert  = App + ".MathExpert" // they hang out at the MathSolvers bulletin board
 )
 
-// Stable Files Pool
+// Bulletin Boards -- agents post their messages here.
 const (
-	StableFilesA = App + ".StableFilesPool.A"
+	StableFilesA    = App + ".StableFilesPool.A"
+	MathProblemsA   = App + ".MathProblems.A"
+	MathSolversAIn  = App + ".MathSolvers.A.Inbox"
+	MathSolversAOut = App + ".MathSolvers.A.Outbox"
 )
 
 // NRS Name, Rank and Serial Number (ID)

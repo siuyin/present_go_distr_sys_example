@@ -7,6 +7,7 @@ Technology Consultant, Beyond Broadcast LLP
 siuyin@beyondbroadcast.com
 
 * Revision History
+- 20151223-1217 Extensible Manager. Let's create a MathSolver -- Marsha.
 - 20151222-0916 Refactor common code like send heartbeat and get ID to cfg package.
 - 20151222-0126 HeartBeatListener -- added in-memory DB (map).
 - 20151221-1556 Manager to-do list. Provide persistence of incoming jobs. Tried gob encoding with bolt-db. Could not get it to work. Went back to json.
@@ -32,6 +33,16 @@ This is a critical service which many other services depend on. New services can
 
 * System Services
 : --------------------------------------------------------
+
+* Manager MathSolver Marsha
+msolv/main.go:
+.play msolv/main.go /010/,/020/
+Marsha posts the problem to the math solvers group and checks back periodically for answers. If there is no answer after some time, or if there are two or more answers, Marsha asks a higher authority for help.
+
+* Math Expert: AddExpert1
+mexp/main.go:
+.play mexp/main.go /010/,/020/
+
 
 * Manager Mun
 mgr/mun.go:
