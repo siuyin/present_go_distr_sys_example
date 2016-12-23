@@ -21,7 +21,7 @@ func main() {
 	myID := cfg.GetID(c) // will block until IDOffice is open
 	log.Printf("My ID is %v", myID)
 
-	me := &cfg.NRS{Name: "AddExpert1", Rank: cfg.MathExpert, ID: myID}
+	me := &cfg.NRS{Name: "MathExpert1", Rank: cfg.MathExpert, ID: myID}
 	cfg.SendHeartBeat(c, me)
 	log.Printf("MathExpert %s Starting...", me.Name)
 	//010_OMIT

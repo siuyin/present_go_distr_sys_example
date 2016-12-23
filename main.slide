@@ -37,11 +37,12 @@ This is a critical service which many other services depend on. New services can
 * Manager MathSolver Marsha
 msolv/main.go:
 .play msolv/main.go /010/,/020/
-Marsha posts the problem to the math solvers group and checks back periodically for answers. If there is no answer after some time, or if there are two or more answers, Marsha asks a higher authority for help.
+Marsha posts the problem to the math solvers group and checks back periodically for answers. If there is no answer after some time, or if there are two or more answers which disagree, Marsha asks a higher authority for help.
 
-* Math Expert: AddExpert1
+* Math Expert: MathExpert1
 mexp/main.go:
 .play mexp/main.go /010/,/020/
+Here is an "expert" who thinks the answer to everything is "42".
 
 
 * Manager Mun
