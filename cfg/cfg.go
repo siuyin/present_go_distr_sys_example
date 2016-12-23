@@ -29,6 +29,7 @@ const (
 	ManagerA    = App + ".ManagerA"          // Example manager to manage files
 	MathSolver  = App + ".MathSolver"
 	MathExpert  = App + ".MathExpert" // they hang out at the MathSolvers bulletin board
+	FileMover   = App + ".FileMover"
 )
 
 // Bulletin Boards -- agents post their messages here.
@@ -36,6 +37,7 @@ const (
 	StableFilesA    = App + ".StableFilesPool.A"
 	MathProblemsA   = App + ".MathProblems.A"
 	MathSolversAOut = App + ".MathSolvers.A.Outbox"
+	FileMoversA     = App + ".FileMovers.A"
 )
 
 // NRS Name, Rank and Serial Number (ID)

@@ -19,7 +19,7 @@ func main() {
 
 	me := &cfg.NRS{Name: "NameA", Rank: cfg.Unassigned, ID: myID}
 	cfg.SendHeartBeat(c, me)
-	log.Println("Service Starting...")
+	log.Printf("%s Starting...", me.Name)
 	select {}
 	//020_OMIT
 }

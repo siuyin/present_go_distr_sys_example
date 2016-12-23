@@ -7,6 +7,7 @@ Technology Consultant, Beyond Broadcast LLP
 siuyin@beyondbroadcast.com
 
 * Revision History
+- 20151223-2146 File Mover worker.
 - 20151223-2120 Extensible Manager. Let the Math Experts / Workers listen in directly to the Math Problems endpoint. Now getting sub-millisecond response.
 - 20151223-1217 Extensible Manager. Let's create a MathSolver -- Marsha.
 - 20151222-0916 Refactor common code like send heartbeat and get ID to cfg package.
@@ -35,17 +36,6 @@ This is a critical service which many other services depend on. New services can
 * System Services
 : --------------------------------------------------------
 
-* Manager MathSolver Marsha
-msolv/main.go:
-.play msolv/main.go /010/,/020/
-Marsha posts the problem to the math solvers group and checks back periodically for answers. If there is no answer after some time, or if there are two or more answers which disagree, Marsha asks a higher authority for help.
-
-* Math Expert: MathExpert1
-mexp/main.go:
-.play mexp/main.go /010/,/020/
-Here is an "expert" who thinks the answer to everything is "42".
-
-
 * Manager Mun
 mgr/mun.go:
 .code mgr/mun.go /010/,/020/
@@ -58,6 +48,25 @@ fw/main.go:
 .code fw/main.go /010/,/020/
 .play -edit fw/main.go /030/,/040/
 
+
+* FileMover worker
+fmvr/main.go:
+.play fmvr/main.go /010/,/020/
+
+: --------------------------------------------------------
+
+
+* Manager MathSolver Marsha
+msolv/main.go:
+.play msolv/main.go /010/,/020/
+Marsha posts the problem to the math solvers group and checks back periodically for answers. If there is no answer after some time, or if there are two or more answers which disagree, Marsha asks a higher authority for help.
+
+* Math Expert: MathExpert1
+mexp/main.go:
+.play mexp/main.go /010/,/020/
+Here is an "expert" who thinks the answer to everything is "42".
+
+: --------------------------------------------------------
 
 * Name, Rank and Serial Number
 nrs/main.go:

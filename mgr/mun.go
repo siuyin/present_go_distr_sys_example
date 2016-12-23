@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"path"
 	"time"
 
 	"siuyin/junk/nats/exampleA/cfg"
@@ -49,7 +50,7 @@ func main() {
 		select {
 		//050_OMIT
 		case <-tkr:
-			clearInbox() // from DB
+			clearInbox(c) // from DB
 		case <-tkr2:
 			// dumpDB()
 		case w := <-workQ:
@@ -124,7 +125,9 @@ func saveToDB(w workItem) {
 		err = b.Put([]byte(time.Now().Format(timeFmt)), byt)
 
 		log.Println(w.Data.FileName)
-
+		if err != nil {
+			log.Fatal(err)
+		}
 		return err
 	})
 }
@@ -153,17 +156,18 @@ func dumpDB() {
 }
 
 func getJob(ptr []byte) ([]byte, []byte, error) {
-	buf := make([]byte, 256)
-	vBuf := make([]byte, 1024000)
+	buf := make([]byte, 0)
+	vBuf := make([]byte, 0)
 	err := db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("Jobs"))
 		c := b.Cursor()
 		k, v := c.Seek(ptr)
 		if k == nil {
+			fmt.Println("No More Work")
 			return mun.NoMoreWorkError
 		}
-		copy(buf, k)
-		copy(vBuf, v)
+		buf = append(buf, k...)
+		vBuf = append(vBuf, v...)
 
 		return nil
 	})
@@ -180,7 +184,7 @@ func getNextJob() ([]byte, []byte, error) {
 	return k, v, err
 }
 
-func clearInbox() {
+func clearInbox(c *nats.EncodedConn) {
 	k, v, err := getNextJob()
 	if err != nil {
 		if err != mun.NoMoreWorkError {
@@ -189,7 +193,7 @@ func clearInbox() {
 		return
 	}
 
-	err = doFileWork(k, v) //and do work
+	err = doFileWork(c, k, v) //and do work
 	if err != nil {
 		log.Println(err)
 	}
@@ -197,7 +201,7 @@ func clearInbox() {
 
 func getPtr() ([]byte, bool) {
 	var ptrSet bool
-	ptr := make([]byte, 32)
+	ptr := make([]byte, 0)
 
 	db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("JobsPtr"))
@@ -206,21 +210,31 @@ func getPtr() ([]byte, bool) {
 			ptrSet = false
 		}
 		ptrSet = true
-		copy(ptr, v)
+		ptr = append(ptr, v...)
 		return nil
 	})
 	return ptr, ptrSet
 }
 
-func doFileWork(k, v []byte) error {
+func doFileWork(c *nats.EncodedConn, k, v []byte) error {
 	err := db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("JobsPtr"))
-		err := b.Put([]byte("Ptr"), k)
-		if err != nil {
-			log.Fatal(err)
+		if err := b.Put([]byte("Ptr"), k); err != nil {
+			log.Println(err)
+			return err
 		}
 		fmt.Printf("Dispatching work: %s %s\n", k, v)
-		return err
+		wi := workItem{}
+		if err := json.Unmarshal(v, &wi); err != nil {
+			log.Printf("json Unmarshal err: %v", err)
+			return err
+		}
+		mc := mun.FileMoveCmd{}
+		mc.From = path.Join(wi.Data.WorkingDirectory, wi.Data.FileName)
+		mc.To = path.Join(wi.Data.WorkingDirectory, "tmp")
+		mc.Op = mun.FileCopy
+
+		return nil
 	})
 	return err
 }
