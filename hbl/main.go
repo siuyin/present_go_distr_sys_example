@@ -25,13 +25,14 @@ func main() {
 	defer c.Close()
 	tkr := time.Tick(time.Second)
 	id := cfg.GetID(c)
-	me := &cfg.NRS{Name: "Herbert", Rank: cfg.HBListener, ID: id}
+	me := &cfg.NRS{Name: "Herbert", Rank: cfg.HBListener, ID: id,
+		Rx: []cfg.Board{cfg.HeartBeat}, Tx: []cfg.Board{cfg.HeartBeat}}
 	cfg.SendHeartBeat(c, me)
 	seen := map[string]dat{}
 	//010_OMIT
 	log.Println("Listener Starting...")
 
-	c.Subscribe(cfg.HeartBeat, func(agent *dat) {
+	c.Subscribe(string(cfg.HeartBeat), func(agent *dat) {
 		agent.T = time.Now()
 		key := agent.Name + string(agent.Rank) + agent.ID
 		mtx.Lock()
@@ -43,7 +44,7 @@ func main() {
 	for {
 		select {
 		case <-tkr:
-			c.Publish(cfg.HeartBeat, me)
+			c.Publish(string(cfg.HeartBeat), me)
 			displayDat(&seen)
 		}
 	}
@@ -72,6 +73,7 @@ func displayDat(d *map[string]dat) {
 		if time.Now().Sub(v.T).Seconds() > 2 {
 			s = "F: "
 		}
-		fmt.Printf("%s%s %s %s %s\n", s, v.Name, v.Rank, v.ID, v.T.Format("15:04:05 MST"))
+		fmt.Printf("%s%s %s %s %s\n  Rx:%s\n  Tx:%s\n", s, v.Name, v.Rank, v.ID,
+			v.T.Format("15:04:05 MST"), v.RxList(), v.TxList())
 	}
 }

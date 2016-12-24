@@ -8,6 +8,7 @@ package cfg
 // Once a response is coded it stays in our DNA
 
 import (
+	"strings"
 	"time"
 
 	"github.com/nats-io/go-nats"
@@ -15,9 +16,7 @@ import (
 
 // Application Constants and Service Names
 const (
-	App       = "EgA"
-	IDOffice  = App + ".IDOffice"
-	HeartBeat = App + ".HeartBeat"
+	App = "EgA"
 )
 
 // Rank is a rank or position within the organisation / system.
@@ -45,6 +44,8 @@ const (
 	MathSolversAOut = Board(App + ".MathSolvers.A.Outbox")
 	FileMoversA     = Board(App + ".FileMovers.A")
 	FileMoversAOut  = Board(App + ".FileMovers.A.Outbox")
+	HeartBeat       = Board(App + ".HeartBeat")
+	IDOffice        = Board(App + ".IDOffice")
 )
 
 // NRS Name, Rank and Serial Number (ID)
@@ -55,11 +56,29 @@ type NRS struct {
 	Tx, Rx []Board
 }
 
+//RxList returns a comma separated list of Rx Board names
+func (n NRS) RxList() string {
+	s := []string{}
+	for _, v := range n.Rx {
+		s = append(s, string(v))
+	}
+	return strings.Join(s, ",")
+}
+
+//TxList returns a comma separated list of Tx Board names
+func (n NRS) TxList() string {
+	s := []string{}
+	for _, v := range n.Tx {
+		s = append(s, string(v))
+	}
+	return strings.Join(s, ",")
+}
+
 //GetID requests an ID from the ID Office.
 func GetID(c *nats.EncodedConn) string {
 	id := ""
 	for id == "" {
-		c.Request(IDOffice, "I'd like an ID please.", &id, time.Second)
+		c.Request(string(IDOffice), "I'd like an ID please.", &id, time.Second)
 	}
 	return id
 }
@@ -71,7 +90,7 @@ func SendHeartBeat(c *nats.EncodedConn, me *NRS) {
 		for {
 			select {
 			case <-tkr:
-				c.Publish(HeartBeat, me)
+				c.Publish(string(HeartBeat), me)
 			}
 		}
 	}()
