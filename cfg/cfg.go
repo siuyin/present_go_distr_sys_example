@@ -20,30 +20,39 @@ const (
 	HeartBeat = App + ".HeartBeat"
 )
 
+// Rank is a rank or position within the organisation / system.
+type Rank string
+
 // Ranks or Position or Function
 const (
-	Unassigned  = App + ".Unassigned"
-	FileWatcher = App + ".FileWatcher"
-	IDOfficer   = App + ".IDOfficer"
-	HBListener  = App + ".HeartBeatListener" // they listen to agent heart beats
-	ManagerA    = App + ".ManagerA"          // Example manager to manage files
-	MathSolver  = App + ".MathSolver"
-	MathExpert  = App + ".MathExpert" // they hang out at the MathSolvers bulletin board
-	FileMover   = App + ".FileMover"
+	Unassigned  = Rank(App + ".Unassigned")
+	FileWatcher = Rank(App + ".FileWatcher")
+	IDOfficer   = Rank(App + ".IDOfficer")
+	HBListener  = Rank(App + ".HeartBeatListener") // they listen to agent heart beats
+	ManagerA    = Rank(App + ".ManagerA")          // Example manager to manage files
+	MathSolver  = Rank(App + ".MathSolver")
+	MathExpert  = Rank(App + ".MathExpert") // they hang out at the MathSolvers bulletin board
+	FileMover   = Rank(App + ".FileMover")
 )
 
-// Bulletin Boards -- agents post their messages here.
+// Board is a Bulletin Board or Radio Frequency Channel.
+type Board string
+
+// Bulletin Boards or Frequency-- agents post their messages here.
 const (
-	StableFilesA    = App + ".StableFilesPool.A"
-	MathProblemsA   = App + ".MathProblems.A"
-	MathSolversAOut = App + ".MathSolvers.A.Outbox"
-	FileMoversA     = App + ".FileMovers.A"
-	FileMoversAOut  = App + ".FileMovers.A.Outbox"
+	StableFilesA    = Board(App + ".StableFilesPool.A")
+	MathProblemsA   = Board(App + ".MathProblems.A")
+	MathSolversAOut = Board(App + ".MathSolvers.A.Outbox")
+	FileMoversA     = Board(App + ".FileMovers.A")
+	FileMoversAOut  = Board(App + ".FileMovers.A.Outbox")
 )
 
 // NRS Name, Rank and Serial Number (ID)
 type NRS struct {
-	Name, Rank, ID string
+	Name   string
+	Rank   Rank
+	ID     string
+	Tx, Rx []Board
 }
 
 //GetID requests an ID from the ID Office.

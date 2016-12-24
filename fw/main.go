@@ -23,7 +23,8 @@ func main() {
 
 	//010_OMIT
 	name := dflt.EnvString("NAME", "FileWatcher1")
-	me := &cfg.NRS{Name: name, Rank: cfg.FileWatcher, ID: myID}
+	me := &cfg.NRS{Name: name, Rank: cfg.FileWatcher, ID: myID,
+		Tx: []cfg.Board{cfg.StableFilesA}}
 	cfg.SendHeartBeat(c, me)
 
 	monPath := dflt.EnvString("MONPATH", "./junk")
@@ -67,5 +68,5 @@ func sendFileDetails(c *nats.EncodedConn, wd, fn string, fi os.FileInfo, me *cfg
 	fd.IsDir = fi.IsDir()
 	fd.Size = fi.Size()
 	fd.ModTime = fi.ModTime()
-	c.Publish(cfg.StableFilesA, &fd)
+	c.Publish(string(cfg.StableFilesA), &fd)
 }

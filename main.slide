@@ -7,7 +7,8 @@ Technology Consultant, Beyond Broadcast LLP
 siuyin@beyondbroadcast.com
 
 * Revision History
-- 20151223-2146 File Mover worker.
+- 20151224-1531 Modify NRS to also list connections (Tx/Rx).
+- 20151223-2146 TODO: File Mover worker.
 - 20151223-2120 Extensible Manager. Let the Math Experts / Workers listen in directly to the Math Problems endpoint. Now getting sub-millisecond response.
 - 20151223-1217 Extensible Manager. Let's create a MathSolver -- Marsha.
 - 20151222-0916 Refactor common code like send heartbeat and get ID to cfg package.

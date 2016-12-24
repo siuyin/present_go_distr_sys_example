@@ -29,7 +29,9 @@ func main() {
 	myID := cfg.GetID(c)
 	log.Printf("My ID is %v", myID)
 
-	me := &cfg.NRS{Name: "Mun", Rank: cfg.ManagerA, ID: myID}
+	me := &cfg.NRS{Name: "Mun", Rank: cfg.ManagerA, ID: myID,
+		Tx: []cfg.Board{cfg.FileMoversA},
+		Rx: []cfg.Board{cfg.FileMoversAOut, cfg.StableFilesA}}
 	cfg.SendHeartBeat(c, me)
 	log.Printf("Manager %s Starting...", me.Name)
 
@@ -38,7 +40,7 @@ func main() {
 
 	workQ := make(chan workItem, workQSize)
 	//010_OMIT
-	c.Subscribe(cfg.StableFilesA, func(subj, reply string, fd *mun.FileDetails) {
+	c.Subscribe(string(cfg.StableFilesA), func(subj, reply string, fd *mun.FileDetails) {
 		w := workItem{Subject: subj, Data: *fd}
 		workQ <- w
 	})
@@ -251,7 +253,7 @@ func doFileWork(c *nats.EncodedConn, k, v []byte) error {
 		mc.To = path.Join(wi.Data.WorkingDirectory, "junk", "tmp")
 		mc.Op = mun.FileCopy
 		mc.ID = cfg.GetID(c)
-		c.Publish(cfg.FileMoversA, mc)
+		c.Publish(string(cfg.FileMoversA), mc)
 		fmt.Printf("%v\n", mc)
 
 		return nil

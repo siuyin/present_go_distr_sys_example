@@ -33,7 +33,7 @@ func main() {
 
 	c.Subscribe(cfg.HeartBeat, func(agent *dat) {
 		agent.T = time.Now()
-		key := agent.Name + agent.Rank + agent.ID
+		key := agent.Name + string(agent.Rank) + agent.ID
 		mtx.Lock()
 		seen[key] = *agent
 		mtx.Unlock()

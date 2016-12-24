@@ -17,7 +17,8 @@ func main() {
 	c, _ := nats.NewEncodedConn(nc, "json")
 	defer c.Close()
 
-	me := &cfg.NRS{Name: "IDOfc1", Rank: cfg.IDOfficer, ID: "001"}
+	me := &cfg.NRS{Name: "IDOfc1", Rank: cfg.IDOfficer, ID: "001",
+		Rx: []cfg.Board{cfg.IDOffice}}
 	cfg.SendHeartBeat(c, me)
 	//010_OMIT
 	log.Println("ID Issuer Starting...")

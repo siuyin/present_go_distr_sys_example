@@ -32,17 +32,19 @@ func main() {
 	myID := cfg.GetID(c) // will block until IDOffice is open
 	log.Printf("My ID is %v", myID)
 
-	me := &cfg.NRS{Name: "Marsha", Rank: cfg.MathSolver, ID: myID}
+	me := &cfg.NRS{Name: "Marsha", Rank: cfg.MathSolver, ID: myID,
+		Rx: []cfg.Board{cfg.MathProblemsA, cfg.MathSolversAOut},
+		Tx: []cfg.Board{cfg.MathProblemsA}}
 	cfg.SendHeartBeat(c, me)
 	log.Printf("MathSolver %s Starting...", me.Name)
 
 	//010_OMIT
-	c.Subscribe(cfg.MathProblemsA, func(mp *msh.MathProblem) {
+	c.Subscribe(string(cfg.MathProblemsA), func(mp *msh.MathProblem) {
 		addToJobs(&jobs, &mtx, mp)
 		// No need to inform Experts (workers) as they already listen in.
 	})
 
-	c.Subscribe(cfg.MathSolversAOut, func(ans *msh.MathAnswer) {
+	c.Subscribe(string(cfg.MathSolversAOut), func(ans *msh.MathAnswer) {
 		updateJobs(&jobs, &mtx, ans)
 	})
 	//020_OMIT
@@ -70,7 +72,7 @@ func selfTest(c *nats.EncodedConn) {
 			select {
 			case <-tkr:
 				mp := msh.MathProblem{Name: "2 + 3", ID: cfg.GetID(c), Data: dat}
-				c.Publish(cfg.MathProblemsA, mp)
+				c.Publish(string(cfg.MathProblemsA), mp)
 			}
 		}
 	}()
