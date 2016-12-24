@@ -38,6 +38,7 @@ const (
 	MathProblemsA   = App + ".MathProblems.A"
 	MathSolversAOut = App + ".MathSolvers.A.Outbox"
 	FileMoversA     = App + ".FileMovers.A"
+	FileMoversAOut  = App + ".FileMovers.A.Outbox"
 )
 
 // NRS Name, Rank and Serial Number (ID)

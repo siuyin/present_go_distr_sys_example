@@ -156,17 +156,24 @@ func dumpDB() {
 }
 
 func getJob(ptr []byte) ([]byte, []byte, error) {
+	// buf := make([]byte, 32)
 	buf := make([]byte, 0)
 	vBuf := make([]byte, 0)
 	err := db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("Jobs"))
 		c := b.Cursor()
-		k, v := c.Seek(ptr)
+		var k, v []byte
+		if len(ptr) == 0 {
+			k, v = c.Seek(ptr)
+		} else {
+			c.Seek(ptr)
+			k, v = c.Next()
+		}
 		if k == nil {
-			fmt.Println("No More Work")
 			return mun.NoMoreWorkError
 		}
 		buf = append(buf, k...)
+		// copy(buf, k)
 		vBuf = append(vBuf, v...)
 
 		return nil
@@ -177,7 +184,7 @@ func getJob(ptr []byte) ([]byte, []byte, error) {
 func getNextJob() ([]byte, []byte, error) {
 	ptr, ptrSet := getPtr()
 	if !ptrSet {
-		ptr = []byte("0")
+		ptr = []byte{}
 	}
 
 	k, v, err := getJob(ptr)
@@ -202,17 +209,21 @@ func clearInbox(c *nats.EncodedConn) {
 func getPtr() ([]byte, bool) {
 	var ptrSet bool
 	ptr := make([]byte, 0)
+	// ptr := make([]byte, 32)
 
 	db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("JobsPtr"))
 		v := b.Get([]byte("Ptr"))
 		if v == nil {
 			ptrSet = false
+			return nil
 		}
 		ptrSet = true
 		ptr = append(ptr, v...)
+		// copy(ptr, v)
 		return nil
 	})
+	// fmt.Printf("ptr: %s\n", ptr)
 	return ptr, ptrSet
 }
 
@@ -229,10 +240,19 @@ func doFileWork(c *nats.EncodedConn, k, v []byte) error {
 			log.Printf("json Unmarshal err: %v", err)
 			return err
 		}
+
+		if wi.Data.IsDir {
+			fmt.Printf("Ignoring folder %s\n", wi.Data.FileName)
+			return nil
+		}
+
 		mc := mun.FileMoveCmd{}
 		mc.From = path.Join(wi.Data.WorkingDirectory, wi.Data.FileName)
-		mc.To = path.Join(wi.Data.WorkingDirectory, "tmp")
+		mc.To = path.Join(wi.Data.WorkingDirectory, "junk", "tmp")
 		mc.Op = mun.FileCopy
+		mc.ID = cfg.GetID(c)
+		c.Publish(cfg.FileMoversA, mc)
+		fmt.Printf("%v\n", mc)
 
 		return nil
 	})
