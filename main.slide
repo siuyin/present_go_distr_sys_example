@@ -7,6 +7,7 @@ Technology Consultant, Beyond Broadcast LLP
 siuyin@beyondbroadcast.com
 
 * Revision History
+- 20151230-0001 Herber the HeartBeatListener now has a cool d3 visualisation.
 - 20151224-1531 Modify NRS to also list connections (Tx/Rx).
 - 20151223-2146 TODO: File Mover worker.
 - 20151223-2120 Extensible Manager. Let the Math Experts / Workers listen in directly to the Math Problems endpoint. Now getting sub-millisecond response.
@@ -32,7 +33,9 @@ Tip: Start these essential services in separate terminals to facilitate developm
 * Get your IDs here at the ID Office
 ido/main.go:
 .play -edit ido/main.go /010/,/020/
-This is a critical service which many other services depend on. New services cannot start if they do not get an ID.
+This is a critical service which many other services depend on. New services cannot start if they do not get an ID. However this service is stateless and you can spin up multiple copies with no ill effects.
+
+A process manager like Kubernetes or Mesos may be useful in managing these services.
 
 * System Services
 : --------------------------------------------------------
@@ -81,7 +84,9 @@ hbl/main.go:
 Things that move have a leader. That leader, named Herbert, has a database.
 
 The system moves, new services are added and removed frequently. This heart beat listener should write entries on what it sees into its notebook.
-The database is an in-memory map.
+The database is an in-memory map. View the visualisation at:
+
+  http://localhost:8082/
 
 
 * System-wide configuration

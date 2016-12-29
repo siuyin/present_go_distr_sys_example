@@ -43,9 +43,8 @@ func main() {
 		seen[key] = *agent
 		mtx.Unlock()
 	})
-
-	webServer(&seen)
 	//020_OMIT
+	webServer(&seen)
 
 	for {
 		select {
