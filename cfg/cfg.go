@@ -14,6 +14,7 @@ import (
 	"github.com/nats-io/go-nats"
 )
 
+//010_OMIT
 // Application Constants and Service Names
 const (
 	App = "EgA"
@@ -34,6 +35,8 @@ const (
 	FileMover   = Rank(App + ".FileMover")
 )
 
+//020_OMIT
+//030_OMIT
 // Board is a Bulletin Board or Radio Frequency Channel.
 type Board string
 
@@ -48,6 +51,7 @@ const (
 	IDOffice        = Board(App + ".IDOffice")
 )
 
+//040_OMIT
 // NRS Name, Rank and Serial Number (ID)
 type NRS struct {
 	Name   string

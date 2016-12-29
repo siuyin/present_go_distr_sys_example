@@ -30,6 +30,11 @@ NATS is the message or event bus.
 
 Tip: Start these essential services in separate terminals to facilitate development.
 
+if the NATS refuses to start in the window. Its probably already running somewhere else.
+
+  killall gnatsd
+
+
 * Get your IDs here at the ID Office
 ido/main.go:
 .play -edit ido/main.go /010/,/020/
@@ -43,7 +48,8 @@ A process manager like Kubernetes or Mesos may be useful in managing these servi
 * Manager Mun
 mgr/mun.go:
 .code mgr/mun.go /010/,/020/
-.play -edit mgr/mun.go /050/,/060/
+.code mgr/mun.go /050/,/060/
+.play -edit mgr/mun.go /070/,/080/
 This manager shares his configuration package (mgr/mun) with workers that report to him.
 .code mgr/mun.go /030/,/040/
 
@@ -52,10 +58,15 @@ fw/main.go:
 .code fw/main.go /010/,/020/
 .play -edit fw/main.go /030/,/040/
 
+Watches a configured folder and publishes to a message board.
+
+FileWatcher, unlike Manager Mun, is stateless and does not use a database.
+
 
 * FileMover worker
 fmvr/main.go:
 .play fmvr/main.go /010/,/020/
+FileMover, another stateless service, subscribes to an incoming message board; acknowledges message receipt and proceeds to move or copy the file.
 
 : --------------------------------------------------------
 
@@ -63,7 +74,18 @@ fmvr/main.go:
 * Manager MathSolver Marsha
 msolv/main.go:
 .play msolv/main.go /010/,/020/
-Marsha posts the problem to the math solvers group and checks back periodically for answers. If there is no answer after some time, or if there are two or more answers which disagree, Marsha asks a higher authority for help.
+Marsha has Math Solvers (experts) working for her. She subscribes to a Math Problems board and keeps them in her inbox.
+
+Meanwhile her workers also subscribe to the Problem board, work on the problem and post their solutions to their _private_ Solutions board.
+Martha checks the Solutions board and matches solutions to their inbox entry and hands off the solution to the original requestor.
+
+* Marsha recruits Math Experts
+Marsha can get more than one answer from her pool of experts, but they must unanimously agree for her to accept the answer.
+If not, she escalates the inconsistency for the system manager to fix.
+
+Every now and then a problem stumps her experts. After a time-out, Marsha declares the problem unsolvable (by her).
+This signals the need for a new expert that can solve that _kind_ of problem.
+
 
 * Math Expert: MathExpert1
 mexp/main.go:
@@ -77,6 +99,11 @@ nrs/main.go:
 .play -edit nrs/main.go /010/,/020/
 All agents _should_ have a heartbeat so that they are discoverable.
 
+The heartbeat sends their configuration info, including which message boards they look at and which boards they write to.
+
+This is the central guiding principle: Focus on _one_ thing and _limit_ the _scope_ of the service.
+I feel this is the key to composable services.
+
 
 * Heart beat listener: Herbert
 hbl/main.go:
@@ -84,7 +111,7 @@ hbl/main.go:
 Things that move have a leader. That leader, named Herbert, has a database.
 
 The system moves, new services are added and removed frequently. This heart beat listener should write entries on what it sees into its notebook.
-The database is an in-memory map. View the visualisation at:
+Herber's database is an in-memory map. View the visualisation at:
 
   http://localhost:8082/
 
@@ -92,4 +119,8 @@ The database is an in-memory map. View the visualisation at:
 * System-wide configuration
 : ----------------------------------------------------------
 cfg/cfg.go:
-.code cfg/cfg.go
+.code cfg/cfg.go /010/,/020/
+
+
+* cfg 2
+.code cfg/cfg.go /030/,/040/

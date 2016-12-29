@@ -17,9 +17,10 @@ func main() {
 	myID := cfg.GetID(c) // will block until IDOffice is open
 	log.Printf("My ID is %v", myID)
 
-	me := &cfg.NRS{Name: "NameA", Rank: cfg.Unassigned, ID: myID}
+	me := &cfg.NRS{Name: "NameA", Rank: cfg.Unassigned, ID: myID,
+		Rx: []cfg.Board{}, Tx: []cfg.Board{}}
 	cfg.SendHeartBeat(c, me)
+	//020_OMIT
 	log.Printf("%s Starting...", me.Name)
 	select {}
-	//020_OMIT
 }

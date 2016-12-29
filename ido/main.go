@@ -10,6 +10,7 @@ import (
 	"siuyin/junk/nats/exampleA/cfg"
 
 	"github.com/nats-io/go-nats"
+	"github.com/siuyin/dflt"
 )
 
 func main() {
@@ -17,11 +18,13 @@ func main() {
 	c, _ := nats.NewEncodedConn(nc, "json")
 	defer c.Close()
 
-	me := &cfg.NRS{Name: "IDOfc1", Rank: cfg.IDOfficer, ID: "001",
+	name := dflt.EnvString("NAME", "IDOfc1")
+	id := dflt.EnvString("ID", "001")
+	me := &cfg.NRS{Name: name, Rank: cfg.IDOfficer, ID: id,
 		Rx: []cfg.Board{cfg.IDOffice}}
 	cfg.SendHeartBeat(c, me)
 	//010_OMIT
-	log.Println("ID Issuer Starting...")
+	log.Printf("%s %s Starting...\n", me.Name, me.ID)
 
 	c.Subscribe(string(cfg.IDOffice), func(subj, reply string, req *string) {
 		c.Publish(reply, randID())

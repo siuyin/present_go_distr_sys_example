@@ -50,7 +50,7 @@ func main() {
 		select {
 		case <-tkr:
 			c.Publish(string(cfg.HeartBeat), me)
-			displayDat(&seen)
+			//displayDat(&seen)
 		}
 	}
 }

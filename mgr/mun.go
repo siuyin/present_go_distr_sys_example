@@ -51,13 +51,13 @@ func main() {
 	for {
 		select {
 		//050_OMIT
-		case <-tkr:
-			clearInbox(c) // from DB
-		case <-tkr2:
-			// dumpDB()
 		case w := <-workQ:
 			saveToDB(w)
+		case <-tkr:
+			clearInbox(c) // from DB
 			//060_OMIT
+		case <-tkr2:
+			// dumpDB()
 		}
 	}
 }
@@ -85,7 +85,9 @@ var db *bolt.DB
 // Remember to defer db.Close() in main.
 func initDB() {
 	var err error
-	dbName := dflt.EnvString("DBNAME", "mgr/mun.db")
+	//070_OMIT
+	dbName := dflt.EnvString("DBNAME", "mgr/mun.db") // could also be cassandra cluster.
+	//080_OMIT
 	db, err = bolt.Open(dbName, 0600, &bolt.Options{Timeout: 1 * time.Second})
 	if err != nil {
 		log.Fatalf(`%v: Opening DB.

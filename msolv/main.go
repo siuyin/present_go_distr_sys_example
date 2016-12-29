@@ -66,7 +66,7 @@ func selfTest(c *nats.EncodedConn) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	tkr := time.Tick(1500 * time.Millisecond)
+	tkr := time.Tick(5000 * time.Millisecond)
 	go func() {
 		for {
 			select {

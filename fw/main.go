@@ -21,16 +21,15 @@ func main() {
 	myID := cfg.GetID(c)
 	log.Printf("My ID is %v", myID)
 
-	//010_OMIT
 	name := dflt.EnvString("NAME", "FileWatcher1")
 	me := &cfg.NRS{Name: name, Rank: cfg.FileWatcher, ID: myID,
 		Tx: []cfg.Board{cfg.StableFilesA}}
 	cfg.SendHeartBeat(c, me)
-
+	//010_OMIT
 	monPath := dflt.EnvString("MONPATH", "./junk")
+	//020_OMIT
 	w := watch.NewWatcher(monPath, time.Second, 3*time.Second)
 	wt := w.Watch()
-	//020_OMIT
 
 	wd := getWorkingDirectory()
 
@@ -38,7 +37,6 @@ func main() {
 MAINLOOP:
 	for {
 		select {
-		//030_OMIT
 		case f := <-wt: // f is a string // HL
 			fi, err := os.Stat(f)
 			if err != nil {
@@ -46,7 +44,6 @@ MAINLOOP:
 				continue MAINLOOP
 			}
 			sendFileDetails(c, wd, f, fi, me)
-			//040_OMIT
 		}
 	}
 }
@@ -68,5 +65,7 @@ func sendFileDetails(c *nats.EncodedConn, wd, fn string, fi os.FileInfo, me *cfg
 	fd.IsDir = fi.IsDir()
 	fd.Size = fi.Size()
 	fd.ModTime = fi.ModTime()
+	//030_OMIT
 	c.Publish(string(cfg.StableFilesA), &fd)
+	//040_OMIT
 }
