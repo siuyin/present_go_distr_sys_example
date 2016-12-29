@@ -23,7 +23,7 @@ func main() {
 	//010_OMIT
 	log.Println("ID Issuer Starting...")
 
-	c.Subscribe(cfg.IDOffice, func(subj, reply string, req *string) {
+	c.Subscribe(string(cfg.IDOffice), func(subj, reply string, req *string) {
 		c.Publish(reply, randID())
 	})
 	//020_OMIT

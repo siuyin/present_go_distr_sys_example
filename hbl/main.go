@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"sort"
 	"sync"
 	"time"
@@ -10,6 +12,7 @@ import (
 	"siuyin/junk/nats/exampleA/cfg"
 
 	"github.com/nats-io/go-nats"
+	"github.com/siuyin/dflt"
 )
 
 type dat struct {
@@ -34,11 +37,14 @@ func main() {
 
 	c.Subscribe(string(cfg.HeartBeat), func(agent *dat) {
 		agent.T = time.Now()
+		agent.Rx = append(agent.Rx, cfg.IDOffice)
 		key := agent.Name + string(agent.Rank) + agent.ID
 		mtx.Lock()
 		seen[key] = *agent
 		mtx.Unlock()
 	})
+
+	webServer(&seen)
 	//020_OMIT
 
 	for {
@@ -76,4 +82,22 @@ func displayDat(d *map[string]dat) {
 		fmt.Printf("%s%s %s %s %s\n  Rx:%s\n  Tx:%s\n", s, v.Name, v.Rank, v.ID,
 			v.T.Format("15:04:05 MST"), v.RxList(), v.TxList())
 	}
+}
+
+func webServer(d *map[string]dat) {
+	go func() {
+		// http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir("./hbl/public"))))
+		http.Handle("/", http.FileServer(http.Dir("./hbl/public")))
+		http.HandleFunc("/heartbeat", func(w http.ResponseWriter, r *http.Request) {
+			enc := json.NewEncoder(w)
+			mtx.Lock()
+			if err := enc.Encode(*d); err != nil {
+				log.Println(err)
+			}
+			mtx.Unlock()
+			// fmt.Fprintf(w, "Hello\n")
+		})
+		log.Println("webServer starting.")
+		log.Fatal(http.ListenAndServe(":"+dflt.EnvString("PORT", "8082"), nil))
+	}()
 }

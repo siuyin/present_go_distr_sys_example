@@ -27,9 +27,9 @@ const (
 	Unassigned  = Rank(App + ".Unassigned")
 	FileWatcher = Rank(App + ".FileWatcher")
 	IDOfficer   = Rank(App + ".IDOfficer")
-	HBListener  = Rank(App + ".HeartBeatListener") // they listen to agent heart beats
-	ManagerA    = Rank(App + ".ManagerA")          // Example manager to manage files
-	MathSolver  = Rank(App + ".MathSolver")
+	HBListener  = Rank(App + ".M.HeartBeatListener") // they listen to agent heart beats
+	ManagerA    = Rank(App + ".M.ManagerA")          // Example manager to manage files
+	MathSolver  = Rank(App + ".M.MathSolver")
 	MathExpert  = Rank(App + ".MathExpert") // they hang out at the MathSolvers bulletin board
 	FileMover   = Rank(App + ".FileMover")
 )
