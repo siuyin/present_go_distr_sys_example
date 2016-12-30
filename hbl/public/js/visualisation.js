@@ -19,50 +19,19 @@ svg.append('svg:defs').append('svg:marker')
   // .attr('fill', '#000')
 ;
 
-// force atlas simulation related.
-function linkDistance(l){
-  switch(l.value){
-    case "live":
-    case "liveManager":
-      return 60;
-    case "IDOffice":
-      return 120;
-    case "dead":
-      return 300;
-    default:
-      return 300;
-  }
-}
-function dragstarted(d) {
-  if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-  d.fx = d.x;
-  d.fy = d.y;
-}
-function dragged(d) {
-  d.fx = d3.event.x;
-  d.fy = d3.event.y;
-}
-function dragended(d) {
-  if (!d3.event.active) simulation.alphaTarget(0);
-  d.fx = null;
-  d.fy = null;
-}
-var simulation = d3.forceSimulation()
-    .force("link", d3.forceLink().id(function(d) { return d.id; })
-      .distance(function(d){return linkDistance(d)}))
-    .force("charge", d3.forceManyBody().strength(-75))
-    .force("yPos", d3.forceY(height/2).strength(0.03)) // useful for landscape
-    //.force("xPos", d3.forceX(width/2).strength(0.03)) // useful for portrait
-    .force("center", d3.forceCenter(width / 2, height / 2))
-    ;
 
 
-// update date time on html page
-d3.select("#updateTime").html(new Date());
+
 
 // d3 calls the heartbeat API endpoint.
-d3.json("/heartbeat", function(error, dat) {
+d3.interval(function() {
+  d3.json("/heartbeat", function(error, dat) {
+    if (error) throw error;
+    update(dat);
+  });
+},1500);
 
+var update=function(dat){
   var nodes=[], links=[], boards={};
   var now = new Date();
 
@@ -134,10 +103,11 @@ d3.json("/heartbeat", function(error, dat) {
       d3.format("02d")(t.getMinutes()) +":" +
       d3.format("02d")(t.getSeconds());
   };
-
+  svg.selectAll("*").remove(); // start out clean
 
   // update function proper starts here -------------------------------
-  if (error) throw error;
+  // update date time on html page
+  d3.select("#updateTime").html(now);
 
   // create  nodes,links and boards objects
   for (var key in dat) {
@@ -218,6 +188,42 @@ d3.json("/heartbeat", function(error, dat) {
   nodec.exit().remove();
   path.exit().remove();
 
+  // force atlas simulation related.
+  function linkDistance(l){
+    switch(l.value){
+      case "live":
+      case "liveManager":
+        return 60;
+      case "IDOffice":
+        return 120;
+      case "dead":
+        return 300;
+      default:
+        return 300;
+    }
+  }
+  function dragstarted(d) {
+    if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+    d.fx = d.x;
+    d.fy = d.y;
+  }
+  function dragged(d) {
+    d.fx = d3.event.x;
+    d.fy = d3.event.y;
+  }
+  function dragended(d) {
+    if (!d3.event.active) simulation.alphaTarget(0);
+    d.fx = null;
+    d.fy = null;
+  }
+  var simulation = d3.forceSimulation()
+      .force("link", d3.forceLink().id(function(d) { return d.id; })
+        .distance(function(d){return linkDistance(d)}))
+      .force("charge", d3.forceManyBody().strength(-75))
+      .force("yPos", d3.forceY(height/2).strength(0.03)) // useful for landscape
+      //.force("xPos", d3.forceX(width/2).strength(0.03)) // useful for portrait
+      .force("center", d3.forceCenter(width / 2, height / 2))
+      ;
   // run simulation
   simulation
       .nodes(graph.nodes)
@@ -259,4 +265,7 @@ d3.json("/heartbeat", function(error, dat) {
 
 
   }
-});
+
+
+
+};
