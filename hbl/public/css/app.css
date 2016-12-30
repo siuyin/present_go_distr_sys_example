@@ -1,9 +1,13 @@
-.links line {
+.link line {
   stroke: #777;
   stroke-opacity: 0.6;
 }
+.node text {
+  font-size: 0.7em;
+}
 
-.links path {
+
+.link path {
   stroke: #777;
   stroke-opacity:0.6;
 }
