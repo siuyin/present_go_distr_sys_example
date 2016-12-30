@@ -58,7 +58,7 @@ var simulation = d3.forceSimulation()
 
 
 // update date time on html page
-//d3.select("#updateTime").html(new Date());
+d3.select("#updateTime").html(new Date());
 
 // d3 calls the heartbeat API endpoint.
 d3.json("/heartbeat", function(error, dat) {
