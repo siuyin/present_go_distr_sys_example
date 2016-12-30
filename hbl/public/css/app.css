@@ -1,0 +1,26 @@
+.links line {
+  stroke: #777;
+  stroke-opacity: 0.6;
+}
+
+.links path {
+  stroke: #777;
+  stroke-opacity:0.6;
+}
+
+#end-arrow {
+    fill: #777;
+    stroke-opacity: 0.6;
+}
+
+.nodes circle {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+body {
+  font-family: sans-serif;
+}
+h1 {
+  font-size: 2em;
+}
