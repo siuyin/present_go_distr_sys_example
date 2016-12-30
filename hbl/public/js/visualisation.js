@@ -24,12 +24,16 @@ svg.append('svg:defs').append('svg:marker')
 
 
 // d3 calls the heartbeat API endpoint.
+d3.json("/heartbeat", function(error, dat) {
+  if (error) throw error;
+  update(dat);
+});
 d3.interval(function() {
   d3.json("/heartbeat", function(error, dat) {
     if (error) throw error;
     update(dat);
   });
-},1500);
+},15000);
 
 var update=function(dat){
   var nodes=[], links=[], boards={};
