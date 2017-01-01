@@ -12,10 +12,11 @@ window.onload = function() {
   let brdT = d3.select("#boards").selectAll(".brdT");
   let brdG = svg // svg group containing boards
     .append("g")
-      .attr("transform","translate(0,40)");
+      .attr("transform","translate(200,40)");
   brdG.append("text")
     .classed("brdHdr",true)
       .attr("x",0).attr("y",-20).attr("opacity",0.3)
+      .attr("text-anchor","end")
       .text("Boards");
   let brd = brdG
     .selectAll(".brd");
@@ -23,7 +24,7 @@ window.onload = function() {
   let svcT = d3.select("#services").selectAll(".svcT");
   let sndrG = svg // svg group containing senders
     .append("g")
-    .attr("transform","translate(250,40)")
+    .attr("transform","translate(350,40)")
   sndrG
     .append("text")
     .classed("svcHdr",true)
@@ -34,7 +35,7 @@ window.onload = function() {
 
   let deadSvcG = svg // svg group containing dead services
     .append("g")
-      .attr("transform","translate(550,40)");
+      .attr("transform","translate(650,40)");
   deadSvcG.append("text")
     .classed("dsvcHdr",true)
       .attr("x",0).attr("y",-20).attr("opacity",0.3)
@@ -214,6 +215,7 @@ window.onload = function() {
             .classed("brd new",true) // no new sel. just an attr.
             .attr("x","0") // start at group origin x coord.
             .attr("dy",function(d,i){return i*1.2+"em"}) // move down one line space for new entries
+            .attr("text-anchor","end")
           .merge(brd) // merge returns new selection: merge of enter and existing.
             .text(function(d,i){return i+": "+d}); // write text to both.
       }
