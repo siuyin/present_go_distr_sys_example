@@ -110,6 +110,7 @@ window.onload = function() {
             sndrG.selectAll(".svcHdr").attr("opacity",0.3);
           }
         }
+
         // svg live services
         let lv=s.filter(function(d){return d["live"]});
         sndr = sndr.data(lv);
@@ -153,30 +154,22 @@ window.onload = function() {
           });
       }
 
-      function boardView(b){
-        return b;
-      }
-
       function dispBoards(){
 
         function brdHdr(){
+          // opacity attr for svg and style for h2 css
           if(b.length>0){
-            brdG.selectAll(".brdHdr").attr("opacity",1);
+            d3.selectAll(".brdHdr").attr("opacity",1).style("opacity",1);
           } else {
-            brdG.selectAll(".brdHdr").attr("opacity",0.3);
+            d3.selectAll(".brdHdr").attr("opacity",0.3).style("opacity",0.3);
           }
         }
 
-        // text
-        d3.select("#boards").selectAll("div").remove();
         let b=boards();
-        for (let i in b){
-          d3.select("#boards").append("div").html(boardView(b[i]));
-        }
+        brdHdr();
 
         // svg
         // bind data b to selection brd (global variable) and update it
-        brdHdr();
         brd = brd.data(b);
         // update existing elements by changing "new" class to "updated"
         brd = brd
@@ -209,4 +202,3 @@ window.onload = function() {
     update();
   },UpdateInterval);
 }
-console.log(UpdateInterval);

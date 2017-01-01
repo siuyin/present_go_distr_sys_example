@@ -53,11 +53,18 @@ h1 {
   font-weight: bold;
   fill: #d62728;
 }
+
 .brdHdr{
   font-size: 1.5em;
   font-weight:lighter;
-  fill: #1f77b4;
 }
+html .brdHdr{
+  color: #1f77b4; // for html text
+}
+svg .brdHdr{
+  fill: #1f77b4; // for svg text
+}
+
 .svcHdr{
   font-size: 1.5em;
   font-weight:lighter;
