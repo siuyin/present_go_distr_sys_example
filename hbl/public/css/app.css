@@ -60,8 +60,9 @@ svg .dead {
   fill: #1f77b4; // for svg text
 }
 #brdHdr,#svcHdr {
+  text-align: center;
   font-size: 1.5em;
-  font-weight:lighter;
+  font-weight:medium;
   padding-bottom:0px;
   border-bottom-style: solid;
   border-bottom-width: medium;
@@ -74,6 +75,7 @@ svg .dead {
   color: #2ca02c; // for html text
 }
 .brdT,.svcT {
+  text-align: center;
   font-size: 1em;
   /*color: #1f77b4;*/
 }
