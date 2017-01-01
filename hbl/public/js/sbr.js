@@ -9,7 +9,7 @@ window.onload = function() {
     width = +svg.attr("width"),
     height = +svg.attr("height");
 
-  let brdT = d3.select("#boards").selectAll("div");
+  let brdT = d3.select("#boards").selectAll(".brdT");
   let brdG = svg // svg group containing boards
     .append("g")
       .attr("transform","translate(0,40)");
@@ -20,6 +20,7 @@ window.onload = function() {
   let brd = brdG
     .selectAll(".brd");
 
+  let svcT = d3.select("#services").selectAll(".svcT");
   let sndrG = svg // svg group containing senders
     .append("g")
     .attr("transform","translate(250,40)")
@@ -107,15 +108,31 @@ window.onload = function() {
         function sHdr(){
           if(lv.length>0){
             sndrG.selectAll(".svcHdr").attr("opacity",1);
+            d3.select("#svcHdr").style("opacity",1);
           } else {
             sndrG.selectAll(".svcHdr").attr("opacity",0.3);
+            d3.select("#svcHdr").style("opacity",0.3);
           }
         }
 
-        // svg live services
         let lv=s.filter(function(d){return d["live"]});
-        sndr = sndr.data(lv);
+        svcT = svcT.data(lv);
         sHdr();
+        svcT = svcT
+          .classed("new",false)
+          .classed("updated",true)
+          .classed("live",function(d){return d["live"]}) // if not "live" set class "dead"
+          .classed("manager",function(d){return d["svc"].Rank.indexOf(".M.")>0})
+          .classed("dead",function(d){return !d["live"]});
+        // svcT.exit().attr("ger",function(d,i){console.log(i,d)});
+        svcT.exit().html("");
+        svcT = svcT.enter()
+        .append("div").classed("svcT new",true)
+        .merge(svcT)
+          .html(function(d){return d["svc"].Name+"#"+d["svc"].Rank});
+
+        // svg live services
+        sndr = sndr.data(lv);
         sndr = sndr
           .classed("new",false)
           .classed("updated",true)
@@ -177,7 +194,7 @@ window.onload = function() {
           .classed("new",false)
           .classed("updated",true);
         brdT = brdT.enter()
-          .append("div").classed("svcT new",true)
+          .append("div").classed("brdT new",true)
           .merge(brdT)
             .html(function(d){return d});
 

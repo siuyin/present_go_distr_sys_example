@@ -59,18 +59,23 @@ svg .dead {
   font-weight:lighter;
   fill: #1f77b4; // for svg text
 }
-#brdHdr{
+#brdHdr,#svcHdr {
   font-size: 1.5em;
   font-weight:lighter;
-  color: #1f77b4; // for html text
   padding-bottom:0px;
   border-bottom-style: solid;
   border-bottom-width: medium;
   margin-bottom: 0.5em;
 }
-.svcT {
+#brdHdr {
+  color: #1f77b4; // for html text
+}
+#svcHdr {
+  color: #2ca02c; // for html text
+}
+.brdT,.svcT {
   font-size: 1em;
-  color: #1f77b4;
+  /*color: #1f77b4;*/
 }
 html .new {
   color: #ff7f0e;
