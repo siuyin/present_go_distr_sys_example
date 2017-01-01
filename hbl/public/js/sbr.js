@@ -12,21 +12,32 @@ window.onload = function() {
   let brdG = svg // svg group containing boards
     .append("g")
       .attr("transform","translate(0,40)");
-  let bHdrSet=false; // board Header Set (present)
+  brdG.append("text")
+    .classed("brdHdr",true)
+      .attr("x",0).attr("y",-20).attr("opacity",0.3)
+      .text("Boards");
   let brd = brdG
     .selectAll(".brd");
 
   let sndrG = svg // svg group containing senders
     .append("g")
     .attr("transform","translate(250,40)")
-  let sHdrSet=false;
+  sndrG
+    .append("text")
+    .classed("svcHdr",true)
+      .attr("x",0).attr("y",-20).attr("opacity",0.3)
+        .text("Services");
   let sndr = sndrG
     .selectAll(".sndr");
 
   let deadSvcG = svg // svg group containing dead services
     .append("g")
       .attr("transform","translate(550,40)");
-  let dHdrSet=false;
+  deadSvcG.append("text")
+    .classed("dsvcHdr",true)
+      .attr("x",0).attr("y",-20).attr("opacity",0.3)
+      .text("R.I.P");
+  // let dHdrSet=false;
   let deadSvc = deadSvcG
       .selectAll(".dsvc");
   // svg
@@ -87,30 +98,16 @@ window.onload = function() {
 
         function dsHdr(){
           if(dead.length>0){
-            if(!dHdrSet){
-              deadSvcG
-                .append("text")
-                .classed("dsvcHdr",true)
-                  .attr("x",0).attr("y",-20)
-                    .text("R.I.P");
-              dHdrSet=true;
-            }
+              deadSvcG.selectAll(".dsvcHdr").attr("opacity",1);
           } else {
-            svg.selectAll(".dsvcHdr").remove();
+            deadSvcG.selectAll(".dsvcHdr").attr("opacity",0.3);
           }
         }
         function sHdr(){
           if(lv.length>0){
-            if(!sHdrSet){
-              sndrG
-                .append("text")
-                .classed("svcHdr",true)
-                  .attr("x",0).attr("y",-20)
-                    .text("Services");
-              sHdrSet=true;
-            }
+            sndrG.selectAll(".svcHdr").attr("opacity",1);
           } else {
-            svg.selectAll(".svcHdr").remove();
+            sndrG.selectAll(".svcHdr").attr("opacity",0.3);
           }
         }
         // svg live services
@@ -164,16 +161,9 @@ window.onload = function() {
 
         function brdHdr(){
           if(b.length>0){
-            if(!bHdrSet){
-              brdG
-                .append("text")
-                .classed("brdHdr",true)
-                  .attr("x",0).attr("y",-20)
-                  .text("Boards");
-              bHdrSet=true;
-            }
+            brdG.selectAll(".brdHdr").attr("opacity",1);
           } else {
-            svg.selectAll(".brdHdr").remove();
+            brdG.selectAll(".brdHdr").attr("opacity",0.3);
           }
         }
 
