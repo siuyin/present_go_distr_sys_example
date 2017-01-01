@@ -9,6 +9,7 @@ window.onload = function() {
     width = +svg.attr("width"),
     height = +svg.attr("height");
 
+  let brdT = d3.select("#boards").selectAll("div");
   let brdG = svg // svg group containing boards
     .append("g")
       .attr("transform","translate(0,40)");
@@ -159,14 +160,27 @@ window.onload = function() {
         function brdHdr(){
           // opacity attr for svg and style for h2 css
           if(b.length>0){
-            d3.selectAll(".brdHdr").attr("opacity",1).style("opacity",1);
+            d3.selectAll(".brdHdr").attr("opacity",1); // svg
+            d3.select("#brdHdr").style("opacity",1); // html
           } else {
-            d3.selectAll(".brdHdr").attr("opacity",0.3).style("opacity",0.3);
+            d3.selectAll(".brdHdr").attr("opacity",0.3);
+            d3.select("#brdHdr").style("opacity",0.3);
           }
         }
 
         let b=boards();
-        brdHdr();
+        brdHdr(); // display board header
+
+        // html
+        brdT = brdT.data(b);
+        brdT = brdT
+          .classed("new",false)
+          .classed("updated",true);
+        brdT = brdT.enter()
+          .append("div").classed("svcT new",true)
+          .merge(brdT)
+            .html(function(d){return d});
+
 
         // svg
         // bind data b to selection brd (global variable) and update it

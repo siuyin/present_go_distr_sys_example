@@ -32,20 +32,20 @@ h1 {
 
 /*cat 10  1f77b4 ff7f0e 2ca02c d62728 9467bd
           8c564b e377c2 7f7f7f bcbd22 17becf */
-.new {
+svg .new {
   fill: #ff7f0e;
 }
-.updated {
+svg .updated {
   fill: #1f77b4;
 }
-.live {
+svg .live {
   fill: #2ca02c;
 }
-.manager {
+svg .manager {
   fill: #8c564b;
   font-weight: bold;
 }
-.dead {
+svg .dead {
   fill: #d62728;
 }
 .dsvcHdr{
@@ -57,12 +57,36 @@ h1 {
 .brdHdr{
   font-size: 1.5em;
   font-weight:lighter;
-}
-html .brdHdr{
-  color: #1f77b4; // for html text
-}
-svg .brdHdr{
   fill: #1f77b4; // for svg text
+}
+#brdHdr{
+  font-size: 1.5em;
+  font-weight:lighter;
+  color: #1f77b4; // for html text
+  padding-bottom:0px;
+  border-bottom-style: solid;
+  border-bottom-width: medium;
+  margin-bottom: 0.5em;
+}
+.svcT {
+  font-size: 1em;
+  color: #1f77b4;
+}
+html .new {
+  color: #ff7f0e;
+}
+html .updated {
+  color: #1f77b4;
+}
+html .live {
+  color: #2ca02c;
+}
+html .manager {
+  color: #8c564b;
+  font-weight: bold;
+}
+html .dead {
+  fill: #d62728;
 }
 
 .svcHdr{
