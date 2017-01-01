@@ -22,16 +22,16 @@ window.onload = function() {
     .selectAll(".brd");
 
   let svcT = d3.select("#services").selectAll(".svcT");
-  let sndrG = svg // svg group containing senders
+  let svcG = svg // svg group containing senders
     .append("g")
     .attr("transform","translate(350,40)")
-  sndrG
+  svcG
     .append("text")
     .classed("svcHdr",true)
       .attr("x",0).attr("y",-20).attr("opacity",0.3)
         .text("Services");
-  let sndr = sndrG
-    .selectAll(".sndr");
+  let svc = svcG
+    .selectAll(".svc");
 
   let deadSvcG = svg // svg group containing dead services
     .append("g")
@@ -108,10 +108,10 @@ window.onload = function() {
         }
         function sHdr(){
           if(lv.length>0){
-            sndrG.selectAll(".svcHdr").attr("opacity",1);
+            svcG.selectAll(".svcHdr").attr("opacity",1);
             d3.select("#svcHdr").style("opacity",1);
           } else {
-            sndrG.selectAll(".svcHdr").attr("opacity",0.3);
+            svcG.selectAll(".svcHdr").attr("opacity",0.3);
             d3.select("#svcHdr").style("opacity",0.3);
           }
         }
@@ -133,20 +133,20 @@ window.onload = function() {
           .html(function(d){return d["svc"].Name+"#"+d["svc"].Rank});
 
         // svg live services
-        sndr = sndr.data(lv);
-        sndr = sndr
+        svc = svc.data(lv);
+        svc = svc
           .classed("new",false)
           .classed("updated",true)
           .classed("live",function(d){return d["live"]}) // if not "live" set class "dead"
           .classed("manager",function(d){return d["svc"].Rank.indexOf(".M.")>0})
           .classed("dead",function(d){return !d["live"]});
-        sndr.exit().remove();
-        sndr = sndr.enter()
+        svc.exit().remove();
+        svc = svc.enter()
           .append("text")
-          .classed("sndr new",true)
+          .classed("svc new",true)
           .attr("x",0)
           .attr("dy",function(d,i){return i*1.2+"em"})
-        .merge(sndr)
+        .merge(svc)
           .text(function(d,i){return i+": "+d["svc"].Name+
             "#"+d["svc"].Rank});
 
