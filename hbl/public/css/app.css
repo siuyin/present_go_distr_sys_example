@@ -41,6 +41,10 @@ h1 {
 .live {
   fill: #2ca02c;
 }
+.manager {
+  fill: #8c564b;
+  font-weight: bold;
+}
 .dead {
   fill: #d62728;
 }
@@ -48,4 +52,14 @@ h1 {
   font-size: 1.5em;
   font-weight: bold;
   fill: #d62728;
+}
+.brdHdr{
+  font-size: 1.5em;
+  font-weight:lighter;
+  fill: #1f77b4;
+}
+.svcHdr{
+  font-size: 1.5em;
+  font-weight:lighter;
+  fill: #2ca02c;
 }

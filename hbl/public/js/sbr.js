@@ -9,22 +9,25 @@ window.onload = function() {
     width = +svg.attr("width"),
     height = +svg.attr("height");
 
-  let brd = svg // svg group containing boards
+  let brdG = svg // svg group containing boards
     .append("g")
-      .attr("transform","translate(50,20)")
+      .attr("transform","translate(0,40)");
+  let bHdrSet=false; // board Header Set (present)
+  let brd = brdG
     .selectAll(".brd");
 
-  let sndr = svg // svg group containing senders
+  let sndrG = svg // svg group containing senders
     .append("g")
-      .attr("transform","translate(300,20)")
-      .attr("class","sndr")
+    .attr("transform","translate(250,40)")
+  let sHdrSet=false;
+  let sndr = sndrG
     .selectAll(".sndr");
 
   let deadSvcG = svg // svg group containing dead services
     .append("g")
-      .attr("transform","translate(500,40)");
+      .attr("transform","translate(550,40)");
+  let dHdrSet=false;
   let deadSvc = deadSvcG
-      .attr("class","dsvc")
       .selectAll(".dsvc");
   // svg
   //   .append("text").classed("dsvcHdr",true)
@@ -82,25 +85,43 @@ window.onload = function() {
           }
         }
 
-        function addHdr(){
+        function dsHdr(){
           if(dead.length>0){
-            deadSvcG
-              .append("text")
-              .classed("dsvcHdr",true)
-                .attr("x",0).attr("y",-20)
-                .text("R.I.P");
+            if(!dHdrSet){
+              deadSvcG
+                .append("text")
+                .classed("dsvcHdr",true)
+                  .attr("x",0).attr("y",-20)
+                    .text("R.I.P");
+              dHdrSet=true;
+            }
           } else {
             svg.selectAll(".dsvcHdr").remove();
+          }
+        }
+        function sHdr(){
+          if(lv.length>0){
+            if(!sHdrSet){
+              sndrG
+                .append("text")
+                .classed("svcHdr",true)
+                  .attr("x",0).attr("y",-20)
+                    .text("Services");
+              sHdrSet=true;
+            }
+          } else {
+            svg.selectAll(".svcHdr").remove();
           }
         }
         // svg live services
         let lv=s.filter(function(d){return d["live"]});
         sndr = sndr.data(lv);
-        // sndr = sndr.data(s);
+        sHdr();
         sndr = sndr
           .classed("new",false)
           .classed("updated",true)
           .classed("live",function(d){return d["live"]}) // if not "live" set class "dead"
+          .classed("manager",function(d){return d["svc"].Rank.indexOf(".M.")>0})
           .classed("dead",function(d){return !d["live"]});
         sndr.exit().remove();
         sndr = sndr.enter()
@@ -109,12 +130,13 @@ window.onload = function() {
           .attr("x",0)
           .attr("dy",function(d,i){return i*1.2+"em"})
         .merge(sndr)
-          .text(function(d,i){return i+": "+d["svc"].Name});
+          .text(function(d,i){return i+": "+d["svc"].Name+
+            "#"+d["svc"].Rank});
 
         // svg dead services
         let dead=s.filter(function(d){return !d["live"]});
 
-        addHdr();
+        dsHdr();
 
         deadSvc = deadSvc.data(dead);
         deadSvc = deadSvc
@@ -137,7 +159,24 @@ window.onload = function() {
       function boardView(b){
         return b;
       }
+
       function dispBoards(){
+
+        function brdHdr(){
+          if(b.length>0){
+            if(!bHdrSet){
+              brdG
+                .append("text")
+                .classed("brdHdr",true)
+                  .attr("x",0).attr("y",-20)
+                  .text("Boards");
+              bHdrSet=true;
+            }
+          } else {
+            svg.selectAll(".brdHdr").remove();
+          }
+        }
+
         // text
         d3.select("#boards").selectAll("div").remove();
         let b=boards();
@@ -147,6 +186,7 @@ window.onload = function() {
 
         // svg
         // bind data b to selection brd (global variable) and update it
+        brdHdr();
         brd = brd.data(b);
         // update existing elements by changing "new" class to "updated"
         brd = brd
