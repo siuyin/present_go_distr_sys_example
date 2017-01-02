@@ -40,13 +40,15 @@ window.onload = function() {
     .classed("dsvcHdr",true)
       .attr("x",0).attr("y",-20).attr("opacity",0.3)
       .text("R.I.P");
-  // let dHdrSet=false;
   let deadSvc = deadSvcG
       .selectAll(".dsvc");
-  // svg
-  //   .append("text").classed("dsvcHdr",true)
-  //     .attr("x",300).attr("y",80)
-  //     .text("R.I.P");
+
+  let sLink = svg // svg group containing svc send to board links
+    .append("g")
+      .attr("transform","translate(345,33)").selectAll(".sLink");
+  let rLink = svg // svg group containing svc receive from board links
+    .append("g")
+      .attr("transform","translate(345,37)").selectAll(".rLink");
 
   // update get data from the API endpoint
   function update() {
@@ -81,6 +83,34 @@ window.onload = function() {
           n.push(k);
         }
         return n;
+      }
+
+      // links returns a map of services to boards.
+      // Eg. l[0]={"s":[0,2],"r":[]}
+      // means service 0 sends to boards 0 and 2
+      //  and receives from none.
+      function links() {
+        let l=[];
+        let s=svcs().filter(function(s){return s["live"]});
+        let b=boards();
+        for (let i in s){
+          let name=s[i]["svc"].Name;
+          let tx = s[i]["svc"].Tx;
+          let  snd = d3.set();
+          let rx = s[i]["svc"].Rx;
+          let  rcv = d3.set();
+          for (var j in tx) {
+            snd.add(d3.scan(b,function(x){return -x.indexOf(tx[j])}));
+            // console.log(name,i,"->",tx[j],d3.scan(b,function(x){return -x.indexOf(tx[j])}))
+          }
+          for (var k in rx) {
+            rcv.add(d3.scan(b,function(x){return -x.indexOf(rx[k])}));
+            // console.log(name,i,"<-",rx[k],d3.scan(b,function(x){return -x.indexOf(rx[k])}))
+          }
+          l.push({"s":snd,"r":rcv});
+          // console.log(snd,rcv);
+        }
+        return l;
       }
 
       function svcView(s){
@@ -220,11 +250,77 @@ window.onload = function() {
             .text(function(d,i){return i+": "+d}); // write text to both.
       }
 
+      function sLinks(){
+        let l=links();
+        let s=[];
+        for (let i in l){
+          let bis=l[i]["s"].values(); // board indexes
+          for (let j in bis){
+            s.push([i,bis[j]]);
+          }
+        }
+        return s
+      }
+      function rLinks(){
+        let l=links();
+        let r=[];
+        for (let i in l){
+          let bis=l[i]["r"].values(); // board indexes
+          for (let j in bis){
+            r.push([i,bis[j]]);
+          }
+        }
+        return r
+      }
+      // dispSLinks displays Send links.
+      function dispSLinks() {
+        // console.log(l[2]["s"].values(),l[2]["r"].values());
+        let l=sLinks(); // array of [svcIdx,boardIdx]
+        sLink = sLink.data(l);
+        sLink = sLink
+            .classed("new",false)
+            .classed("updated",true);
+
+        sLink.exit().remove();
+
+        sLink = sLink.enter()
+          .append("line") // add SVG line
+            .classed("sLink new",true)
+            .merge(sLink)
+            .attr("x1", 0)
+            .attr("y1",function(d){//console.log(d);
+              return d[0]*19})
+
+            .attr("x2",-140)
+            .attr("y2",function(d){return d[1]*19});
+      }
+      // dispRLinks displays Receive links.
+      function dispRLinks() {
+        let l=rLinks(); // array of [svcIdx,boardIdx]
+        rLink = rLink.data(l);
+        rLink = rLink
+            .classed("new",false)
+            .classed("updated",true);
+
+        rLink.exit().remove();
+
+        rLink = rLink.enter()
+          .append("line") // add SVG line
+            .classed("rLink new",true)
+            .merge(rLink)
+            .attr("x1", 0)
+            .attr("y1",function(d){return d[0]*19})
+
+            .attr("x2",-140)
+            .attr("y2",function(d){return d[1]*19});
+      }
+
       // ------------------------------------------------------------------
 
       dispSvcs();
       dispBoards();
-
+      dispSLinks();
+      dispRLinks();
     });
   }
 

@@ -54,7 +54,18 @@ svg .dead {
   fill: #d62728;
 }
 
-.brdHdr{
+svg .sLink,rLink{
+  opacity: 0.5;
+  stroke-width: 3px;
+}
+svg .sLink{
+  stroke: #e377c2;
+}
+svg .rLink{
+  stroke: #17becf;
+}
+
+svg .brdHdr{
   font-size: 1.5em;
   font-weight:lighter;
   fill: #1f77b4; // for svg text
