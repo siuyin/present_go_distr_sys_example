@@ -54,7 +54,7 @@ svg .dead {
   fill: #d62728;
 }
 
-svg .sLink,rLink{
+svg .sLink,.rLink{
   opacity: 0.5;
   stroke-width: 3px;
 }
