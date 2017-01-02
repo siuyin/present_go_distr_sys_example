@@ -3,6 +3,7 @@
 // let => block scope
 // var => function scope
 let UpdateInterval=1000; //ms
+let IDOffice = "EgA.IDOffice";
 
 window.onload = function() {
   let svg = d3.select("svg"),
@@ -55,8 +56,9 @@ window.onload = function() {
     d3.json("/heartbeat", function(error, dat) {
       if (error) throw error;
 
+      var now=new Date();
+      d3.select("#updtTim").html(now);
       function svcs(){
-        let now=new Date();
         let n=[];
         for (let key in dat) {
           let s=dat[key];
@@ -104,8 +106,9 @@ window.onload = function() {
             // console.log(name,i,"->",tx[j],d3.scan(b,function(x){return -x.indexOf(tx[j])}))
           }
           for (var k in rx) {
-            rcv.add(d3.scan(b,function(x){return -x.indexOf(rx[k])}));
-            // console.log(name,i,"<-",rx[k],d3.scan(b,function(x){return -x.indexOf(rx[k])}))
+            if (rx[k] != IDOffice){ // ignore IDOffice receive link
+              rcv.add(d3.scan(b,function(x){return -x.indexOf(rx[k])}));
+            }
           }
           l.push({"s":snd,"r":rcv});
           // console.log(snd,rcv);
@@ -117,17 +120,7 @@ window.onload = function() {
         return s["svc"].Name + " "+ s["svc"].T+":"+s["live"]+":"+s["tx"]+":"+s["rx"];
       }
       function dispSvcs(){
-        // txt
-        d3.select("#services-live").selectAll("div").remove();
-        d3.select("#services-dead").selectAll("div").remove();
         let s=svcs();
-        for (let i in s){
-          if(s[i]["live"]) {
-            d3.select("#services-live").append("div").html(svcView(s[i]));
-          } else {
-            d3.select("#services-dead").append("div").html(svcView(s[i]));
-          }
-        }
 
         function dsHdr(){
           if(dead.length>0){
@@ -155,7 +148,6 @@ window.onload = function() {
           .classed("live",function(d){return d["live"]}) // if not "live" set class "dead"
           .classed("manager",function(d){return d["svc"].Rank.indexOf(".M.")>0})
           .classed("dead",function(d){return !d["live"]});
-        // svcT.exit().attr("ger",function(d,i){console.log(i,d)});
         svcT.exit().html("");
         svcT = svcT.enter()
         .append("div").classed("svcT new",true)
