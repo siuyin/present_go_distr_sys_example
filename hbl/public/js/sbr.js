@@ -102,16 +102,14 @@ window.onload = function() {
           let rx = s[i]["svc"].Rx;
           let  rcv = d3.set();
           for (var j in tx) {
-            snd.add(d3.scan(b,function(x){return -x.indexOf(tx[j])}));
-            // console.log(name,i,"->",tx[j],d3.scan(b,function(x){return -x.indexOf(tx[j])}))
+            snd.add(d3.scan(b,function(x){if(x==tx[j])return 0;return 1;}));
           }
           for (var k in rx) {
             if (rx[k] != IDOffice){ // ignore IDOffice receive link
-              rcv.add(d3.scan(b,function(x){return -x.indexOf(rx[k])}));
+              rcv.add(d3.scan(b,function(x){if(x==rx[k])return 0;return 1;}));
             }
           }
           l.push({"s":snd,"r":rcv});
-          // console.log(snd,rcv);
         }
         return l;
       }
