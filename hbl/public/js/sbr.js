@@ -12,7 +12,7 @@ window.onload = function() {
   let brdT = d3.select("#boards").selectAll(".brdT");
   let brdG = svg // svg group containing boards
     .append("g")
-      .attr("transform","translate(200,40)");
+      .attr("transform","translate(220,40)");
   brdG.append("text")
     .classed("brdHdr",true)
       .attr("x",0).attr("y",-20).attr("opacity",0.3)
@@ -291,7 +291,7 @@ window.onload = function() {
             .attr("y1",function(d){//console.log(d);
               return d[0]*19})
 
-            .attr("x2",-140)
+            .attr("x2",-120)
             .attr("y2",function(d){return d[1]*19});
       }
       // dispRLinks displays Receive links.
@@ -311,7 +311,7 @@ window.onload = function() {
             .attr("x1", 0)
             .attr("y1",function(d){return d[0]*19})
 
-            .attr("x2",-140)
+            .attr("x2",-120)
             .attr("y2",function(d){return d[1]*19});
       }
 
