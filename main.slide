@@ -7,7 +7,7 @@ Technology Consultant, Beyond Broadcast LLP
 siuyin@beyondbroadcast.com
 
 * Revision History
-- 20151230-0001 Herber the HeartBeatListener now has a cool d3 visualisation.
+- 20151230-0001 Herbert the HeartBeatListener now has a cool d3 visualisation.
 - 20151224-1531 Modify NRS to also list connections (Tx/Rx).
 - 20151223-2146 TODO: File Mover worker.
 - 20151223-2120 Extensible Manager. Let the Math Experts / Workers listen in directly to the Math Problems endpoint. Now getting sub-millisecond response.
